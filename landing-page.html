@@ -57,16 +57,17 @@
             border-color: var(--bs-border-color-translucent, rgba(0,0,0,0.1));
         }
 
-        /* Nested Dropdown Menu (Level 3) */
+        /* Nested Dropdown Menu (Level 3) - Now always inline */
         .dropdown-submenu > .dropdown-menu {
-            /* Ensure it behaves like standard dropdown opening downwards */
-            position: absolute;
-            top: 100%;
-            left: 0;
-            z-index: 1000;
-            display: none; /* Controlled by JS/Bootstrap */
-            /* Inherits most styles from .dropdown-menu */
-            margin-top: var(--bs-dropdown-spacer, .125rem);
+            display: none; /* Controlled by JS/Bootstrap for show/hide */
+            width: 100%; /* Occupy full width of parent list item */
+            position: static; /* Explicitly in flow */
+            box-shadow: none; /* No shadow for inline menus */
+            border: none; /* Reset all borders first */
+            border-top: 1px solid var(--bs-border-color-translucent, rgba(0,0,0,0.1)); /* Separator line */
+            border-radius: 0; /* No rounded corners for inline block */
+            padding: 0; /* Child .dropdown-items will have their own padding */
+            margin: 0; /* Remove any default margins */
         }
 
         /* Ensure parent LI can position the nested menu */
@@ -120,10 +121,10 @@
 
         /* Indentation */
         .navbar-nav .dropdown-menu .dropdown-item {
-            padding-left: 1.25rem;
+            padding-left: 2.25rem; /* Base for L2 (L1 nav-link 1rem + 1.25rem step) */
         }
         .dropdown-submenu > .dropdown-menu .dropdown-item {
-            padding-left: 2.25rem; /* Make this distinct */
+            padding-left: 3.5rem;  /* L3 indent (L2 2.25rem + 1.25rem step) */
         }
 
         /* Mobile adjustments */
@@ -142,9 +143,10 @@
              .dropdown-item:last-child {
                  border-bottom: none;
              }
-             .dropdown-submenu > .dropdown-menu {
+             /* The border-top for .dropdown-submenu > .dropdown-menu is now in its base style above */
+             /* .dropdown-submenu > .dropdown-menu {
                  border-top: 1px solid var(--bs-border-color-translucent, rgba(0,0,0,0.1));
-             }
+             } */
               /* Ensure nested mobile carets point right/down if preferred */
              .dropdown-submenu > .dropdown-toggle::after {
                 transform: rotate(-90deg); /* Right */
