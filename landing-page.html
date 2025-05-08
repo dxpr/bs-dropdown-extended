@@ -5,18 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Navigation Menu Refactored</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Enhanced Dropdowns CSS -->
+    <link href="css/enhanced-dropdowns.css" rel="stylesheet">
     <style>
         :root {
-            /* Define Bootstrap primary color to our theme's indigo */
-            --bs-primary: #4f46e5;
-            --bs-primary-rgb: 79, 70, 229; /* Corresponding RGB for use in rgba() */
-            --caret-toggler-width: 2.5rem; /* Approx 40px, providing >20px clickable area with padding */
-            --caret-toggler-padding-x: 0.625rem; /* 10px padding inside caret toggler */
-
-            /* Custom variables below are effectively replaced by BS theme variables */
-            /* --menu-focus-bg: #eef2ff; */ /* Mapped to --bs-primary-bg-subtle */
-            /* --menu-focus-text: #3730a3; */ /* Mapped to --bs-primary-text-emphasis */
-            /* --menu-focus-outline: #4f46e5; */ /* Mapped to --bs-primary & BS focus ring */
+            --bs-border-radius: 0;
+            --bs-border-radius-sm: 0;
+            --bs-border-radius-lg: 0;
+            --bs-border-radius-xl: 0;
+            --bs-border-radius-xxl: 0;
+            --bs-border-radius-pill: 0; 
         }
 
         body {
@@ -43,165 +41,45 @@
             font-size: 1.75rem; /* Slightly adjusted */
             font-weight: 700;
         }
-
+        
+        /* Base styling for nav links and dropdown items */
         .navbar-nav .nav-link,
-        .navbar-nav .dropdown-item { /* Apply base styling to items too */
+        .navbar-nav .dropdown-item { 
             color: var(--bs-body-color, #212529);
             font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: var(--bs-border-radius, 0.375rem);
+            /* padding: 0.5rem 1rem; */ /* Base padding is handled by BS and plugin */
+            /* border-radius is now 0 globally */
             transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
-            display: flex; /* For alignment within items if needed */
+            display: flex; 
             align-items: center;
+        }
+        /* Ensure dropdown items that are not part of a wrapper get their padding */
+        .dropdown-menu > li > .dropdown-item {
+             padding: 0.5rem 1rem;
         }
 
         .navbar-toggler {
             border-color: var(--bs-border-color-translucent, rgba(0,0,0,0.1));
+            /* border-radius will be 0 due to global override */
         }
         .navbar-toggler:focus {
             box-shadow: 0 0 0 var(--bs-focus-ring-width, 0.25rem) var(--bs-focus-ring-color, rgba(13, 110, 253, 0.25));
         }
-
-        /* Wrapper for split buttons */
-        .nav-link-wrapper,
-        .dropdown-item-wrapper {
-            display: flex;
-            align-items: stretch; /* Make children full height */
-            padding: 0; /* Reset padding, children will have it */
-            border-radius: var(--bs-border-radius, 0.375rem); /* Apply radius to wrapper */
-            overflow: hidden; /* Keep children's rounded corners neat */
-        }
-
-        /* Text part of a split button */
-        .nav-link-wrapper > .nav-link,
-        .dropdown-item-wrapper > .dropdown-item {
-            flex-grow: 1; /* Text takes available space */
-            border-radius: 0; /* Remove individual radius, wrapper has it */
-            /* Resetting default dropdown-toggle caret for text part if it was a full toggle before */
-        }
-         .nav-link-wrapper > .nav-link::after, /* Remove default caret from text part */
-         .dropdown-item-wrapper > .dropdown-item:not(.dropdown-toggle)::after { /* Specifically if not a full toggle */
-            display: none;
-        }
-
-        /* Caret button part of a split button */
-        .caret-toggler {
-            flex-shrink: 0;
-            width: var(--caret-toggler-width);
-            padding-left: var(--caret-toggler-padding-x);
-            padding-right: var(--caret-toggler-padding-x);
-            border: none;
-            background-color: transparent;
-            color: inherit;
-            border-left: 1px solid var(--bs-border-color-translucent, rgba(0,0,0,0.1));
-            border-radius: 0; /* Wrapper handles radius */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative; /* For caret positioning */
-        }
-        .caret-toggler::after { /* Manually add caret if not using .dropdown-toggle */
-            display: inline-block;
-            margin-left: .255em;
-            vertical-align: .255em;
-            content: "";
-            border-top: .3em solid;
-            border-right: .3em solid transparent;
-            border-bottom: 0;
-            border-left: .3em solid transparent;
-            transition: transform 0.2s ease-in-out;
-        }
-        .caret-toggler[aria-expanded="true"]::after {
-            transform: rotate(180deg);
-        }
-
-        /* Hover/Focus on individual parts of split button */
-        .nav-link-wrapper > .nav-link:hover,
-        .nav-link-wrapper > .nav-link:focus,
-        .dropdown-item-wrapper > .dropdown-item:hover, /* Text part hover/focus */
-        .dropdown-item-wrapper > .dropdown-item:focus,
-        .nav-link-wrapper > .caret-toggler:hover, /* Caret part hover/focus */
-        .nav-link-wrapper > .caret-toggler:focus,
-        .dropdown-item-wrapper > .caret-toggler:hover,
-        .dropdown-item-wrapper > .caret-toggler:focus,
-        .navbar-nav .nav-link.dropdown-toggle:hover, /* Full toggle hover/focus */
-        .navbar-nav .nav-link.dropdown-toggle:focus,
-        .dropdown-item.dropdown-toggle:hover,
-        .dropdown-item.dropdown-toggle:focus {
-            color: var(--bs-primary-text-emphasis);
-            background-color: var(--bs-primary-bg-subtle);
-            outline: none;
-        }
         
-        /* Focus visible for split and full toggles */
-        .nav-link-wrapper > .nav-link:focus-visible,
-        .dropdown-item-wrapper > .dropdown-item:focus-visible,
-        .nav-link-wrapper > .caret-toggler:focus-visible,
-        .dropdown-item-wrapper > .caret-toggler:focus-visible,
-        .navbar-nav .nav-link.dropdown-toggle:focus-visible,
-        .dropdown-item.dropdown-toggle:focus-visible {
-             box-shadow: 0 0 0 var(--bs-focus-ring-width, 0.25rem) var(--bs-focus-ring-color);
+        /* Focus/Hover States - Mostly handled by plugin or BS defaults now */
+        /* Retain specific overrides if necessary */
+        .navbar-nav .nav-link:not(.bs-dropdown-wrapper > .nav-link):focus, 
+        .navbar-nav .nav-link:not(.bs-dropdown-wrapper > .nav-link):hover,
+        .dropdown-item:not(.bs-dropdown-item-wrapper > .dropdown-item):focus,
+        .dropdown-item:not(.bs-dropdown-item-wrapper > .dropdown-item):hover {
+            color: var(--bs-primary-text-emphasis); 
+            background-color: var(--bs-primary-bg-subtle); 
+            outline: none; 
         }
 
-        /* Dropdown Base Customization */
-        .dropdown-menu {
-            border-radius: var(--bs-border-radius-lg, 0.5rem); /* Larger radius */
-            box-shadow: var(--bs-box-shadow-sm, 0 .125rem .25rem rgba(0,0,0,.075));
-            border-color: var(--bs-border-color-translucent, rgba(0,0,0,0.1));
-            max-height: calc(100vh - 100px); /* Limit dropdown height to prevent viewport overflow */
-            overflow-y: auto; /* Enable scrolling within long dropdowns */
-            margin-top: 0;
-            position: absolute;
-            z-index: 1000;
-        }
-
-        /* Submenu positioning */
-        .dropdown-submenu {
-            position: relative;
-        }
-
-        /* Level 2+ dropdown positioning */
-        .dropdown-submenu > .dropdown-menu {
-            position: static;
-            border-radius: 0;
-            box-shadow: none;
-            /* Overrides for submenu dropdowns */
-            border: none; /* Reset all borders first */
-            border-top: 1px solid var(--bs-border-color, #dee2e6);
-            padding: 0; /* Child .dropdown-items will have their own padding */
-            margin: 0; /* Remove any default margins */
-            display: none; /* Controlled by JS/Bootstrap for show/hide */
-            width: 100%; /* Occupy full width of parent list item */
-        }
-        
-        /* Visible dropdown submenu */
-        .dropdown-submenu.show > .dropdown-menu {
-            display: block;
-        }
-
-        /* Dropdown Item Styling & States */
-        .dropdown-item {
-            color: var(--bs-body-color, #212529);
-            transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
-            padding-top: 0.5rem;
-            padding-bottom: 0.5rem;
-        }
-
-        /* Focus/Hover States - Using BS theme variables */
-        .navbar-nav .nav-link:focus,
-        .navbar-nav .nav-link:hover,
-        .dropdown-item:focus,
-        .dropdown-item:hover {
-            color: var(--bs-primary-text-emphasis); /* Derived from --bs-primary */
-            background-color: var(--bs-primary-bg-subtle); /* Derived from --bs-primary */
-            outline: none; /* Remove default outline if using box-shadow for focus */
-        }
-
-         /* Explicit Focus Visible Styling for Accessibility - Using BS theme variables */
-        .navbar-nav .nav-link:focus-visible,
-        .dropdown-item:focus-visible {
-            /* Rely on Bootstrap's standard focus ring which uses --bs-focus-ring-color */
-            /* --bs-focus-ring-color defaults to rgba(var(--bs-primary-rgb), .25) */
+         /* Explicit Focus Visible Styling for Accessibility - Mostly handled by plugin or BS defaults now */
+        .navbar-nav .nav-link:not(.bs-dropdown-wrapper > .nav-link):focus-visible,
+        .dropdown-item:not(.bs-dropdown-item-wrapper > .dropdown-item):focus-visible {
             box-shadow: 0 0 0 var(--bs-focus-ring-width, 0.25rem) var(--bs-focus-ring-color);
         }
 
@@ -209,69 +87,21 @@
         .navbar-nav .nav-link.active,
         .dropdown-item.active {
             font-weight: 600;
-            color: var(--bs-primary-text-emphasis, #052c65); /* BS default or themed */
-            background-color: var(--bs-primary-bg-subtle, #cfe2ff); /* BS default or themed */
+            color: var(--bs-primary-text-emphasis, #052c65); 
+            background-color: var(--bs-primary-bg-subtle, #cfe2ff);
         }
-
-        /* Caret Styling (Using Bootstrap default via .dropdown-toggle::after) */
-        .dropdown-toggle::after {
+        
+        /* Bootstrap original caret styling for .dropdown-toggle (non-split) */
+        .nav-link.dropdown-toggle::after, 
+        .dropdown-item.dropdown-toggle::after {
             transition: transform 0.2s ease-in-out;
-            color: inherit; /* Inherit color */
+            color: inherit;
         }
-        /* Rotate caret when expanded */
-        .dropdown-toggle[aria-expanded="true"]::after {
+        .nav-link.dropdown-toggle[aria-expanded="true"]::after, 
+        .dropdown-item.dropdown-toggle[aria-expanded="true"]::after {
             transform: rotate(180deg);
         }
 
-        /* Indentation */
-        .navbar-nav .dropdown-menu .dropdown-item {
-            padding-left: 2.25rem; /* Base for L2 (L1 nav-link 1rem + 1.25rem step) */
-        }
-        .dropdown-submenu > .dropdown-menu .dropdown-item {
-            padding-left: 3.5rem;  /* L3 indent (L2 2.25rem + 1.25rem step) */
-        }
-
-        /* Mobile adjustments */
-        @media (max-width: 991.98px) {
-            .navbar-collapse.show {
-                box-shadow: var(--bs-box-shadow, 0 .5rem 1rem rgba(0,0,0,.15));
-                border-top: 1px solid var(--bs-border-color, #dee2e6);
-            }
-            .dropdown-menu {
-                 box-shadow: none; /* Remove shadow for inline mobile menus */
-                 border: none; /* Remove border for inline mobile menus */
-            }
-             .dropdown-item,
-             .dropdown-item-wrapper { /* Wrapper needs border in mobile too */
-                 border-bottom: 1px solid var(--bs-border-color-translucent, rgba(0,0,0,0.1));
-             }
-             .dropdown-item:last-child,
-             .dropdown-item-wrapper:last-child {
-                 border-bottom: none;
-             }
-             /* The border-top for .dropdown-submenu > .dropdown-menu is now in its base style above */
-             /* .dropdown-submenu > .dropdown-menu {
-                 border-top: 1px solid var(--bs-border-color-translucent, rgba(0,0,0,0.1));
-             } */
-              /* Ensure nested mobile carets point right/down if preferred */
-             .dropdown-submenu > .dropdown-toggle::after {
-                transform: rotate(-90deg); /* Right */
-            }
-            .dropdown-submenu > .dropdown-toggle[aria-expanded="true"]::after {
-                transform: rotate(0deg);   /* Down */
-            }
-        }
-
-        /* Explicitly ensure the .show class makes the nested menu visible */
-        .dropdown-submenu > .dropdown-menu.show {
-            display: block;
-        }
-
-        /* Ensure dropdown menus don't overflow their container */
-        .navbar-collapse {
-            max-height: calc(100vh - 70px);
-            overflow-y: auto;
-        }
     </style>
 </head>
 <body>
@@ -288,25 +118,25 @@
                     </li>
                     <li class="nav-item dropdown" role="none">
                         <!-- SPLIT BUTTON: Features -->
-                        <div class="nav-link-wrapper">
+                        <div class="bs-dropdown-wrapper">
                             <a class="nav-link" href="#features" id="featuresDropdown" role="menuitem">
                                 Features
                             </a>
-                            <button class="caret-toggler dropdown-toggle" type="button" id="featuresCaretToggler" 
-                                    data-bs-target="#featuresMenu" aria-expanded="false" 
-                                    aria-controls="featuresMenu" aria-labelledby="featuresDropdown">
+                            <button class="bs-dropdown-caret" type="button" id="featuresCaretToggler" 
+                                    aria-expanded="false" aria-controls="featuresMenu" 
+                                    aria-labelledby="featuresDropdown">
                                 <span class="visually-hidden">Toggle Features submenu</span>
                             </button>
                         </div>
                         <ul class="dropdown-menu" id="featuresMenu" aria-labelledby="featuresDropdown">
                             <li><a class="dropdown-item" href="#features" role="menuitem">Features Overview</a></li>
-                            <li class="dropdown-submenu" role="none">
+                            <li class="bs-dropdown-submenu" role="none">
                                 <!-- SPLIT BUTTON: Performance -->
-                                <div class="dropdown-item-wrapper">
+                                <div class="bs-dropdown-item-wrapper">
                                     <a class="dropdown-item" href="#features-performance" id="performanceDropdown" role="menuitem">
                                         Performance
                                     </a>
-                                    <button class="caret-toggler" type="button" aria-expanded="false" 
+                                    <button class="bs-dropdown-caret" type="button" aria-expanded="false" 
                                             aria-labelledby="performanceDropdown" aria-controls="performanceMenu">
                                         <span class="visually-hidden">Toggle Performance submenu</span>
                                     </button>
@@ -318,7 +148,7 @@
                                     <li><a class="dropdown-item" href="#features-reliability" role="menuitem">Reliability</a></li>
                                 </ul>
                             </li>
-                            <li class="dropdown-submenu" role="none">
+                            <li class="bs-dropdown-submenu" role="none">
                                 <!-- FULL TOGGLE: Security (href="#") -->
                                 <a class="dropdown-item dropdown-toggle" href="#" id="securityDropdown" role="button" aria-expanded="false" aria-controls="securityMenu">
                                     Security
@@ -354,200 +184,15 @@
     </nav>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Enhanced Dropdowns JS -->
+    <script src="js/enhanced-dropdowns.js"></script>
     <script>
        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Custom dropdown script initializing...');
-
-            // --- Handle Top-Level Split Button for "Features" --- 
-            const featuresCaretButton = document.getElementById('featuresCaretToggler');
-            if (featuresCaretButton) {
-                const featuresMenu = document.getElementById('featuresMenu');
-                if (featuresMenu) {
-                    console.log('Initializing Bootstrap Dropdown for TOP-LEVEL Features caret:', featuresCaretButton, 'Menu ID:', featuresMenu.id);
-                    // Initialize WITHOUT options, as they don't help find the menu in the constructor
-                    let featuresDropdownInstance = new bootstrap.Dropdown(featuresCaretButton);
-
-                    // *** MANUALLY SET THE INTERNAL MENU REFERENCE ***
-                    // This is the key step because the constructor logic fails for our structure
-                    featuresDropdownInstance._menu = featuresMenu;
-                    console.log('Manually assigned _menu property:', featuresDropdownInstance._menu);
-
-                    // Manual toggle handlers since we removed data-bs-toggle="dropdown"
-                    featuresCaretButton.addEventListener('click', function(event) {
-                        console.log('Features caret clicked, manually toggling dropdown.');
-                        event.stopPropagation(); // Important if there are other click listeners
-                        featuresDropdownInstance.toggle();
-                    });
-
-                    featuresCaretButton.addEventListener('keydown', function(event) {
-                        if (event.key === 'Enter' || event.key === ' ') {
-                            console.log('Features caret Enter/Space, manually toggling dropdown.');
-                            event.preventDefault();
-                            event.stopPropagation();
-                            featuresDropdownInstance.toggle();
-                        }
-                    });
-                     // Sync ARIA attribute on BS events
-                    featuresCaretButton.addEventListener('show.bs.dropdown', () => {
-                        featuresCaretButton.setAttribute('aria-expanded', 'true');
-                    });
-                    featuresCaretButton.addEventListener('hide.bs.dropdown', () => {
-                        featuresCaretButton.setAttribute('aria-expanded', 'false');
-                    });
-
-                } else {
-                    console.warn('Could not find #featuresMenu for #featuresCaretToggler. Dropdown not initialized.');
-                }
-            } else {
-                console.warn('Could not find #featuresCaretToggler');
-            }
-
-            // --- Handle NESTED dropdowns (li.dropdown-submenu) --- 
-            const nestedSubmenus = document.querySelectorAll('li.dropdown-submenu');
-            console.log(`Found ${nestedSubmenus.length} nested submenus (li.dropdown-submenu).`);
-
-            nestedSubmenus.forEach((submenu, index) => {
-                console.log(`Processing nested submenu ${index + 1}/${nestedSubmenus.length}:`, submenu);
-
-                const linkElement = submenu.querySelector('a.dropdown-item'); 
-                const caretButton = submenu.querySelector('button.caret-toggler'); 
-                const fullToggleLink = submenu.querySelector('a.dropdown-item.dropdown-toggle');
-                
-                const menu = submenu.querySelector('.dropdown-menu');
-
-                if (!menu) {
-                    console.warn('No valid dropdown menu found for submenu:', submenu.id || submenu);
-                    return;
-                }
-                console.log('Found menu for nested submenu:', menu.id || menu);
-
-                let labelledById = '';
-                if (linkElement) labelledById = linkElement.id;
-                else if (fullToggleLink) labelledById = fullToggleLink.id;
-
-                if (!menu.id && labelledById) {
-                    menu.id = labelledById + '-menu';
-                }
-                if (labelledById) {
-                    menu.setAttribute('aria-labelledby', labelledById);
-                }
-
-                let toggleElement = null;
-                let isSplitButton = false;
-
-                if (caretButton && linkElement) { 
-                    toggleElement = caretButton;
-                    isSplitButton = true;
-                    console.log('Identified as SPLIT button. Toggle element:', toggleElement.id || toggleElement, 'Menu ID:', menu.id);
-                    if (linkElement.href && linkElement.href !== '#' && linkElement.href !== '') {
-                        // Link part should navigate, not toggle.
-                    }
-                     if (!toggleElement.hasAttribute('aria-controls') && menu.id) {
-                        toggleElement.setAttribute('aria-controls', menu.id);
-                    }
-                } else if (fullToggleLink) { 
-                    toggleElement = fullToggleLink;
-                    console.log('Identified as FULL toggle link. Toggle element:', toggleElement.id || toggleElement, 'Menu ID:', menu.id);
-                     if (!toggleElement.hasAttribute('aria-controls') && menu.id) { 
-                        toggleElement.setAttribute('aria-controls', menu.id);
-                    }
-                }
-
-                if (!toggleElement) {
-                    console.warn('No toggle element (caret or full link) found for submenu:', submenu.id || submenu);
-                    return;
-                }
-
-                console.log('Initializing Bootstrap Dropdown on:', toggleElement.id || toggleElement);
-                let bsDropdownInstance = new bootstrap.Dropdown(toggleElement);
-
-                // *** MANUALLY SET THE INTERNAL MENU REFERENCE (for nested too!) ***
-                // Needed if the constructor fails due to structure (e.g., wrapper div)
-                if (menu) { // Ensure menu was found earlier
-                    bsDropdownInstance._menu = menu;
-                    console.log('Manually assigned _menu for nested instance:', bsDropdownInstance._menu);
-                } else {
-                    console.warn('Menu not found for nested instance, _menu not assigned:', toggleElement.id || toggleElement);
-                    // Instance might not work correctly without a menu
-                }
-
-                // Click Handler
-                toggleElement.addEventListener('click', (event) => {
-                    event.stopPropagation(); // Prevent parent dropdowns from closing
-                    // For split buttons, prevent default if it's a button, but links should navigate.
-                    // For full toggles that are <a>, preventDefault is important.
-                    if (toggleElement.tagName === 'A' && (toggleElement.getAttribute('href') === '#' || toggleElement.getAttribute('href') === '')) {
-                        event.preventDefault();
-                    }
-                    bsDropdownInstance.toggle();
-                });
-
-                // Keyboard Handler (Enter/Space on Toggle)
-                toggleElement.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault(); 
-                        e.stopPropagation(); 
-                        bsDropdownInstance.toggle();
-                    }
-                });
-
-                // ARIA Sync & Focus Management on Bootstrap events (attached to the toggleElement)
-                // Bootstrap handles aria-expanded on elements with data-bs-toggle="dropdown"
-                // For manually controlled ones, we ensure it here.
-                 toggleElement.addEventListener('show.bs.dropdown', () => { // Note: BS5 uses show/shown
-                    toggleElement.setAttribute('aria-expanded', 'true');
-                 });
-                toggleElement.addEventListener('shown.bs.dropdown', () => {
-                    toggleElement.setAttribute('aria-expanded', 'true'); // Redundant but safe
-                    const firstItem = menu.querySelector('a.dropdown-item:not(.disabled), button.dropdown-item:not(.disabled)');
-                    if(firstItem) {
-                        firstItem.focus();
-                    }
-                });
-                toggleElement.addEventListener('hide.bs.dropdown', () => {
-                     toggleElement.setAttribute('aria-expanded', 'false');
-                });
-                toggleElement.addEventListener('hidden.bs.dropdown', () => {
-                    toggleElement.setAttribute('aria-expanded', 'false'); // Redundant but safe
-                    // If focus needs to return to toggleElement, but only if it was hidden by Esc/etc.
-                    // Bootstrap might handle this, or we might need to check document.activeElement
-                });
-
-                // Keyboard Navigation within the Nested Menu
-                menu.addEventListener('keydown', (e) => {
-                    const items = Array.from(menu.querySelectorAll('a.dropdown-item:not(.disabled), button.dropdown-item:not(.disabled)'));
-                    if (items.length === 0) return;
-
-                    const currentIndex = items.indexOf(document.activeElement);
-                    let handled = false;
-
-                    if (e.key === 'ArrowDown') {
-                        const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % items.length : 0;
-                        items[nextIndex].focus();
-                        handled = true;
-                    } else if (e.key === 'ArrowUp') {
-                        const prevIndex = currentIndex >= 0 ? (currentIndex - 1 + items.length) % items.length : items.length - 1;
-                        items[prevIndex].focus();
-                        handled = true;
-                    } else if (e.key === 'Escape' || (!isSplitButton && e.key === 'ArrowLeft') || (isSplitButton && e.key === 'ArrowLeft' && document.activeElement === items[0])) { 
-                        // For split buttons, ArrowLeft only from first item to close.
-                        // For full toggles, ArrowLeft always closes.
-                        bsDropdownInstance.hide();
-                        toggleElement.focus(); 
-                        handled = true;
-                    } else if (e.key === 'Tab') {
-                        if ((currentIndex === items.length - 1 && !e.shiftKey) || (currentIndex === 0 && e.shiftKey)) {
-                            bsDropdownInstance.hide();
-                        }
-                    }
-
-                    if (handled) {
-                         e.preventDefault();
-                         e.stopPropagation();
-                    }
-                });
-            }); 
-            console.log('Custom dropdown script finished.');
+            // Initialize Enhanced Dropdowns
+            new BootstrapEnhancedDropdowns({
+                debug: true // Enable for development if needed
+            });
+            console.log('BootstrapEnhancedDropdowns initialized for landing-page.html');
        }); 
     </script>
 </body>
