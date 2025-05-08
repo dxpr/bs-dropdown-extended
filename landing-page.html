@@ -22,6 +22,13 @@
         body {
             background-color: var(--bs-light-bg-subtle, #f8fafc);
             padding-top: 70px; /* Prevent content overlap below fixed navbar */
+            overflow-y: auto; /* Ensure body can scroll */
+            height: 100%;
+        }
+
+        html {
+            height: 100%;
+            overflow-y: auto; /* Ensure html can scroll */
         }
 
         /* Navbar Customization */
@@ -141,24 +148,35 @@
             border-radius: var(--bs-border-radius-lg, 0.5rem); /* Larger radius */
             box-shadow: var(--bs-box-shadow-sm, 0 .125rem .25rem rgba(0,0,0,.075));
             border-color: var(--bs-border-color-translucent, rgba(0,0,0,0.1));
+            max-height: calc(100vh - 100px); /* Limit dropdown height to prevent viewport overflow */
+            overflow-y: auto; /* Enable scrolling within long dropdowns */
+            margin-top: 0;
+            position: absolute;
+            z-index: 1000;
         }
 
-        /* Nested Dropdown Menu (Level 3) - Now always inline */
+        /* Submenu positioning */
+        .dropdown-submenu {
+            position: relative;
+        }
+
+        /* Level 2+ dropdown positioning */
         .dropdown-submenu > .dropdown-menu {
-            display: none; /* Controlled by JS/Bootstrap for show/hide */
-            width: 100%; /* Occupy full width of parent list item */
-            position: static; /* Explicitly in flow */
-            box-shadow: none; /* No shadow for inline menus */
+            position: static;
+            border-radius: 0;
+            box-shadow: none;
+            /* Overrides for submenu dropdowns */
             border: none; /* Reset all borders first */
-            border-top: 1px solid var(--bs-border-color-translucent, rgba(0,0,0,0.1)); /* Separator line */
-            border-radius: 0; /* No rounded corners for inline block */
+            border-top: 1px solid var(--bs-border-color, #dee2e6);
             padding: 0; /* Child .dropdown-items will have their own padding */
             margin: 0; /* Remove any default margins */
+            display: none; /* Controlled by JS/Bootstrap for show/hide */
+            width: 100%; /* Occupy full width of parent list item */
         }
-
-        /* Ensure parent LI can position the nested menu */
-        .dropdown-submenu {
-            position: relative; /* Crucial for absolute positioning of child menu */
+        
+        /* Visible dropdown submenu */
+        .dropdown-submenu.show > .dropdown-menu {
+            display: block;
         }
 
         /* Dropdown Item Styling & States */
@@ -247,6 +265,12 @@
         /* Explicitly ensure the .show class makes the nested menu visible */
         .dropdown-submenu > .dropdown-menu.show {
             display: block;
+        }
+
+        /* Ensure dropdown menus don't overflow their container */
+        .navbar-collapse {
+            max-height: calc(100vh - 70px);
+            overflow-y: auto;
         }
     </style>
 </head>
