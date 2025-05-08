@@ -10,6 +10,8 @@
             /* Define Bootstrap primary color to our theme's indigo */
             --bs-primary: #4f46e5;
             --bs-primary-rgb: 79, 70, 229; /* Corresponding RGB for use in rgba() */
+            --caret-toggler-width: 2.5rem; /* Approx 40px, providing >20px clickable area with padding */
+            --caret-toggler-padding-x: 0.625rem; /* 10px padding inside caret toggler */
 
             /* Custom variables below are effectively replaced by BS theme variables */
             /* --menu-focus-bg: #eef2ff; */ /* Mapped to --bs-primary-bg-subtle */
@@ -35,12 +37,15 @@
             font-weight: 700;
         }
 
-        .navbar-nav .nav-link {
+        .navbar-nav .nav-link,
+        .navbar-nav .dropdown-item { /* Apply base styling to items too */
             color: var(--bs-body-color, #212529);
             font-weight: 500;
-            padding: 0.5rem 1rem; /* Adjusted padding */
+            padding: 0.5rem 1rem;
             border-radius: var(--bs-border-radius, 0.375rem);
             transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+            display: flex; /* For alignment within items if needed */
+            align-items: center;
         }
 
         .navbar-toggler {
@@ -48,6 +53,87 @@
         }
         .navbar-toggler:focus {
             box-shadow: 0 0 0 var(--bs-focus-ring-width, 0.25rem) var(--bs-focus-ring-color, rgba(13, 110, 253, 0.25));
+        }
+
+        /* Wrapper for split buttons */
+        .nav-link-wrapper,
+        .dropdown-item-wrapper {
+            display: flex;
+            align-items: stretch; /* Make children full height */
+            padding: 0; /* Reset padding, children will have it */
+            border-radius: var(--bs-border-radius, 0.375rem); /* Apply radius to wrapper */
+            overflow: hidden; /* Keep children's rounded corners neat */
+        }
+
+        /* Text part of a split button */
+        .nav-link-wrapper > .nav-link,
+        .dropdown-item-wrapper > .dropdown-item {
+            flex-grow: 1; /* Text takes available space */
+            border-radius: 0; /* Remove individual radius, wrapper has it */
+            /* Resetting default dropdown-toggle caret for text part if it was a full toggle before */
+        }
+         .nav-link-wrapper > .nav-link::after, /* Remove default caret from text part */
+         .dropdown-item-wrapper > .dropdown-item:not(.dropdown-toggle)::after { /* Specifically if not a full toggle */
+            display: none;
+        }
+
+        /* Caret button part of a split button */
+        .caret-toggler {
+            flex-shrink: 0;
+            width: var(--caret-toggler-width);
+            padding-left: var(--caret-toggler-padding-x);
+            padding-right: var(--caret-toggler-padding-x);
+            border: none;
+            background-color: transparent;
+            color: inherit;
+            border-left: 1px solid var(--bs-border-color-translucent, rgba(0,0,0,0.1));
+            border-radius: 0; /* Wrapper handles radius */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative; /* For caret positioning */
+        }
+        .caret-toggler::after { /* Manually add caret if not using .dropdown-toggle */
+            display: inline-block;
+            margin-left: .255em;
+            vertical-align: .255em;
+            content: "";
+            border-top: .3em solid;
+            border-right: .3em solid transparent;
+            border-bottom: 0;
+            border-left: .3em solid transparent;
+            transition: transform 0.2s ease-in-out;
+        }
+        .caret-toggler[aria-expanded="true"]::after {
+            transform: rotate(180deg);
+        }
+
+        /* Hover/Focus on individual parts of split button */
+        .nav-link-wrapper > .nav-link:hover,
+        .nav-link-wrapper > .nav-link:focus,
+        .dropdown-item-wrapper > .dropdown-item:hover, /* Text part hover/focus */
+        .dropdown-item-wrapper > .dropdown-item:focus,
+        .nav-link-wrapper > .caret-toggler:hover, /* Caret part hover/focus */
+        .nav-link-wrapper > .caret-toggler:focus,
+        .dropdown-item-wrapper > .caret-toggler:hover,
+        .dropdown-item-wrapper > .caret-toggler:focus,
+        .navbar-nav .nav-link.dropdown-toggle:hover, /* Full toggle hover/focus */
+        .navbar-nav .nav-link.dropdown-toggle:focus,
+        .dropdown-item.dropdown-toggle:hover,
+        .dropdown-item.dropdown-toggle:focus {
+            color: var(--bs-primary-text-emphasis);
+            background-color: var(--bs-primary-bg-subtle);
+            outline: none;
+        }
+        
+        /* Focus visible for split and full toggles */
+        .nav-link-wrapper > .nav-link:focus-visible,
+        .dropdown-item-wrapper > .dropdown-item:focus-visible,
+        .nav-link-wrapper > .caret-toggler:focus-visible,
+        .dropdown-item-wrapper > .caret-toggler:focus-visible,
+        .navbar-nav .nav-link.dropdown-toggle:focus-visible,
+        .dropdown-item.dropdown-toggle:focus-visible {
+             box-shadow: 0 0 0 var(--bs-focus-ring-width, 0.25rem) var(--bs-focus-ring-color);
         }
 
         /* Dropdown Base Customization */
@@ -137,10 +223,12 @@
                  box-shadow: none; /* Remove shadow for inline mobile menus */
                  border: none; /* Remove border for inline mobile menus */
             }
-             .dropdown-item {
+             .dropdown-item,
+             .dropdown-item-wrapper { /* Wrapper needs border in mobile too */
                  border-bottom: 1px solid var(--bs-border-color-translucent, rgba(0,0,0,0.1));
              }
-             .dropdown-item:last-child {
+             .dropdown-item:last-child,
+             .dropdown-item-wrapper:last-child {
                  border-bottom: none;
              }
              /* The border-top for .dropdown-submenu > .dropdown-menu is now in its base style above */
@@ -175,16 +263,31 @@
                         <a class="nav-link" href="#home" role="menuitem">Home</a>
                     </li>
                     <li class="nav-item dropdown" role="none">
-                        <a class="nav-link dropdown-toggle" href="#features" id="featuresDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Features
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="featuresDropdown">
+                        <!-- SPLIT BUTTON: Features -->
+                        <div class="nav-link-wrapper">
+                            <a class="nav-link" href="#features" id="featuresDropdown" role="menuitem">
+                                Features
+                            </a>
+                            <button class="caret-toggler dropdown-toggle" type="button" id="featuresCaretToggler" 
+                                    data-bs-target="#featuresMenu" aria-expanded="false" 
+                                    aria-controls="featuresMenu" aria-labelledby="featuresDropdown">
+                                <span class="visually-hidden">Toggle Features submenu</span>
+                            </button>
+                        </div>
+                        <ul class="dropdown-menu" id="featuresMenu" aria-labelledby="featuresDropdown">
                             <li><a class="dropdown-item" href="#features" role="menuitem">Features Overview</a></li>
                             <li class="dropdown-submenu" role="none">
-                                <a class="dropdown-item dropdown-toggle" href="#features-performance" id="performanceDropdown" role="button" aria-expanded="false">
-                                    Performance
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="performanceDropdown">
+                                <!-- SPLIT BUTTON: Performance -->
+                                <div class="dropdown-item-wrapper">
+                                    <a class="dropdown-item" href="#features-performance" id="performanceDropdown" role="menuitem">
+                                        Performance
+                                    </a>
+                                    <button class="caret-toggler" type="button" aria-expanded="false" 
+                                            aria-labelledby="performanceDropdown" aria-controls="performanceMenu">
+                                        <span class="visually-hidden">Toggle Performance submenu</span>
+                                    </button>
+                                </div>
+                                <ul class="dropdown-menu" id="performanceMenu" aria-labelledby="performanceDropdown">
                                     <li><a class="dropdown-item" href="#features-performance" role="menuitem">Performance Overview</a></li>
                                     <li><a class="dropdown-item" href="#features-speed" role="menuitem">Speed</a></li>
                                     <li><a class="dropdown-item" href="#features-scalability" role="menuitem">Scalability</a></li>
@@ -192,10 +295,11 @@
                                 </ul>
                             </li>
                             <li class="dropdown-submenu" role="none">
-                                <a class="dropdown-item dropdown-toggle" href="#features-security" id="securityDropdown" role="button" aria-expanded="false">
+                                <!-- FULL TOGGLE: Security (href="#") -->
+                                <a class="dropdown-item dropdown-toggle" href="#" id="securityDropdown" role="button" aria-expanded="false" aria-controls="securityMenu">
                                     Security
                                 </a>
-                                <ul class="dropdown-menu" aria-labelledby="securityDropdown">
+                                <ul class="dropdown-menu" id="securityMenu" aria-labelledby="securityDropdown">
                                     <li><a class="dropdown-item" href="#features-security-firewall" role="menuitem">Firewall</a></li>
                                     <li><a class="dropdown-item" href="#features-security-encryption" role="menuitem">Encryption</a></li>
                                     <li><a class="dropdown-item" href="#features-security-compliance" role="menuitem">Compliance</a></li>
@@ -205,7 +309,8 @@
                         </ul>
                     </li>
                     <li class="nav-item dropdown" role="none">
-                        <a class="nav-link dropdown-toggle" href="#about" id="aboutDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <!-- FULL TOGGLE: About (href="#") -->
+                        <a class="nav-link dropdown-toggle" href="#" id="aboutDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             About
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
@@ -227,56 +332,166 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
        document.addEventListener('DOMContentLoaded', function() {
-            const nestedToggles = document.querySelectorAll('li.dropdown-submenu > a.dropdown-toggle');
+            console.log('Custom dropdown script initializing...');
 
-            nestedToggles.forEach(toggle => {
-                const menu = toggle.nextElementSibling;
-                if (!menu || !menu.classList.contains('dropdown-menu')) {
-                    console.warn('No valid dropdown menu found for toggle:', toggle.id || toggle);
+            // --- Handle Top-Level Split Button for "Features" --- 
+            const featuresCaretButton = document.getElementById('featuresCaretToggler');
+            if (featuresCaretButton) {
+                const featuresMenu = document.getElementById('featuresMenu');
+                if (featuresMenu) {
+                    console.log('Initializing Bootstrap Dropdown for TOP-LEVEL Features caret:', featuresCaretButton, 'Menu ID:', featuresMenu.id);
+                    // Initialize WITHOUT options, as they don't help find the menu in the constructor
+                    let featuresDropdownInstance = new bootstrap.Dropdown(featuresCaretButton);
+
+                    // *** MANUALLY SET THE INTERNAL MENU REFERENCE ***
+                    // This is the key step because the constructor logic fails for our structure
+                    featuresDropdownInstance._menu = featuresMenu;
+                    console.log('Manually assigned _menu property:', featuresDropdownInstance._menu);
+
+                    // Manual toggle handlers since we removed data-bs-toggle="dropdown"
+                    featuresCaretButton.addEventListener('click', function(event) {
+                        console.log('Features caret clicked, manually toggling dropdown.');
+                        event.stopPropagation(); // Important if there are other click listeners
+                        featuresDropdownInstance.toggle();
+                    });
+
+                    featuresCaretButton.addEventListener('keydown', function(event) {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                            console.log('Features caret Enter/Space, manually toggling dropdown.');
+                            event.preventDefault();
+                            event.stopPropagation();
+                            featuresDropdownInstance.toggle();
+                        }
+                    });
+                     // Sync ARIA attribute on BS events
+                    featuresCaretButton.addEventListener('show.bs.dropdown', () => {
+                        featuresCaretButton.setAttribute('aria-expanded', 'true');
+                    });
+                    featuresCaretButton.addEventListener('hide.bs.dropdown', () => {
+                        featuresCaretButton.setAttribute('aria-expanded', 'false');
+                    });
+
+                } else {
+                    console.warn('Could not find #featuresMenu for #featuresCaretToggler. Dropdown not initialized.');
+                }
+            } else {
+                console.warn('Could not find #featuresCaretToggler');
+            }
+
+            // --- Handle NESTED dropdowns (li.dropdown-submenu) --- 
+            const nestedSubmenus = document.querySelectorAll('li.dropdown-submenu');
+            console.log(`Found ${nestedSubmenus.length} nested submenus (li.dropdown-submenu).`);
+
+            nestedSubmenus.forEach((submenu, index) => {
+                console.log(`Processing nested submenu ${index + 1}/${nestedSubmenus.length}:`, submenu);
+
+                const linkElement = submenu.querySelector('a.dropdown-item'); 
+                const caretButton = submenu.querySelector('button.caret-toggler'); 
+                const fullToggleLink = submenu.querySelector('a.dropdown-item.dropdown-toggle');
+                
+                const menu = submenu.querySelector('.dropdown-menu');
+
+                if (!menu) {
+                    console.warn('No valid dropdown menu found for submenu:', submenu.id || submenu);
                     return;
                 }
-                // Ensure menu has an ID for aria-labelledby, fallback if toggle has no ID (though it should)
-                if (!menu.id) {
-                    const toggleId = toggle.id || 'menu-toggle-' + Math.random().toString(36).substring(2, 9);
-                    if (!toggle.id) toggle.id = toggleId; // Assign ID to toggle if it doesn't have one
-                    menu.id = toggleId + '-menu';
+                console.log('Found menu for nested submenu:', menu.id || menu);
+
+                let labelledById = '';
+                if (linkElement) labelledById = linkElement.id;
+                else if (fullToggleLink) labelledById = fullToggleLink.id;
+
+                if (!menu.id && labelledById) {
+                    menu.id = labelledById + '-menu';
                 }
-                menu.setAttribute('aria-labelledby', toggle.id);
+                if (labelledById) {
+                    menu.setAttribute('aria-labelledby', labelledById);
+                }
 
-                // Manual Initialization of Bootstrap Dropdown for nested toggle
-                // Assumes data-bs-toggle is NOT on the nested toggle element itself
-                let bsDropdownInstance = new bootstrap.Dropdown(toggle);
+                let toggleElement = null;
+                let isSplitButton = false;
 
-                // Click Handler: Stop propagation and toggle the nested menu
-                toggle.addEventListener('click', (event) => {
+                if (caretButton && linkElement) { 
+                    toggleElement = caretButton;
+                    isSplitButton = true;
+                    console.log('Identified as SPLIT button. Toggle element:', toggleElement.id || toggleElement, 'Menu ID:', menu.id);
+                    if (linkElement.href && linkElement.href !== '#' && linkElement.href !== '') {
+                        // Link part should navigate, not toggle.
+                    }
+                     if (!toggleElement.hasAttribute('aria-controls') && menu.id) {
+                        toggleElement.setAttribute('aria-controls', menu.id);
+                    }
+                } else if (fullToggleLink) { 
+                    toggleElement = fullToggleLink;
+                    console.log('Identified as FULL toggle link. Toggle element:', toggleElement.id || toggleElement, 'Menu ID:', menu.id);
+                     if (!toggleElement.hasAttribute('aria-controls') && menu.id) { 
+                        toggleElement.setAttribute('aria-controls', menu.id);
+                    }
+                }
+
+                if (!toggleElement) {
+                    console.warn('No toggle element (caret or full link) found for submenu:', submenu.id || submenu);
+                    return;
+                }
+
+                console.log('Initializing Bootstrap Dropdown on:', toggleElement.id || toggleElement);
+                let bsDropdownInstance = new bootstrap.Dropdown(toggleElement);
+
+                // *** MANUALLY SET THE INTERNAL MENU REFERENCE (for nested too!) ***
+                // Needed if the constructor fails due to structure (e.g., wrapper div)
+                if (menu) { // Ensure menu was found earlier
+                    bsDropdownInstance._menu = menu;
+                    console.log('Manually assigned _menu for nested instance:', bsDropdownInstance._menu);
+                } else {
+                    console.warn('Menu not found for nested instance, _menu not assigned:', toggleElement.id || toggleElement);
+                    // Instance might not work correctly without a menu
+                }
+
+                // Click Handler
+                toggleElement.addEventListener('click', (event) => {
                     event.stopPropagation(); // Prevent parent dropdowns from closing
+                    // For split buttons, prevent default if it's a button, but links should navigate.
+                    // For full toggles that are <a>, preventDefault is important.
+                    if (toggleElement.tagName === 'A' && (toggleElement.getAttribute('href') === '#' || toggleElement.getAttribute('href') === '')) {
+                        event.preventDefault();
+                    }
                     bsDropdownInstance.toggle();
                 });
 
                 // Keyboard Handler (Enter/Space on Toggle)
-                 toggle.addEventListener('keydown', (e) => {
-                     if (e.key === 'Enter' || e.key === ' ') {
-                         e.preventDefault(); // Prevent default action (e.g., scrolling)
-                         e.stopPropagation(); // Prevent other handlers
-                         bsDropdownInstance.toggle();
-                     }
-                 });
+                toggleElement.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault(); 
+                        e.stopPropagation(); 
+                        bsDropdownInstance.toggle();
+                    }
+                });
 
-                // ARIA Sync & Focus Management on Bootstrap events
-                toggle.addEventListener('shown.bs.dropdown', () => {
-                    toggle.setAttribute('aria-expanded', 'true');
-                    const firstItem = menu.querySelector('a.dropdown-item:not(.disabled)');
+                // ARIA Sync & Focus Management on Bootstrap events (attached to the toggleElement)
+                // Bootstrap handles aria-expanded on elements with data-bs-toggle="dropdown"
+                // For manually controlled ones, we ensure it here.
+                 toggleElement.addEventListener('show.bs.dropdown', () => { // Note: BS5 uses show/shown
+                    toggleElement.setAttribute('aria-expanded', 'true');
+                 });
+                toggleElement.addEventListener('shown.bs.dropdown', () => {
+                    toggleElement.setAttribute('aria-expanded', 'true'); // Redundant but safe
+                    const firstItem = menu.querySelector('a.dropdown-item:not(.disabled), button.dropdown-item:not(.disabled)');
                     if(firstItem) {
                         firstItem.focus();
                     }
                 });
-                toggle.addEventListener('hidden.bs.dropdown', () => {
-                    toggle.setAttribute('aria-expanded', 'false');
+                toggleElement.addEventListener('hide.bs.dropdown', () => {
+                     toggleElement.setAttribute('aria-expanded', 'false');
+                });
+                toggleElement.addEventListener('hidden.bs.dropdown', () => {
+                    toggleElement.setAttribute('aria-expanded', 'false'); // Redundant but safe
+                    // If focus needs to return to toggleElement, but only if it was hidden by Esc/etc.
+                    // Bootstrap might handle this, or we might need to check document.activeElement
                 });
 
                 // Keyboard Navigation within the Nested Menu
                 menu.addEventListener('keydown', (e) => {
-                    const items = Array.from(menu.querySelectorAll('a.dropdown-item:not(.disabled)'));
+                    const items = Array.from(menu.querySelectorAll('a.dropdown-item:not(.disabled), button.dropdown-item:not(.disabled)'));
                     if (items.length === 0) return;
 
                     const currentIndex = items.indexOf(document.activeElement);
@@ -290,15 +505,15 @@
                         const prevIndex = currentIndex >= 0 ? (currentIndex - 1 + items.length) % items.length : items.length - 1;
                         items[prevIndex].focus();
                         handled = true;
-                    } else if (e.key === 'Escape' || e.key === 'ArrowLeft') { // ArrowLeft to mimic closing behavior
+                    } else if (e.key === 'Escape' || (!isSplitButton && e.key === 'ArrowLeft') || (isSplitButton && e.key === 'ArrowLeft' && document.activeElement === items[0])) { 
+                        // For split buttons, ArrowLeft only from first item to close.
+                        // For full toggles, ArrowLeft always closes.
                         bsDropdownInstance.hide();
-                        toggle.focus(); // Return focus to the toggle
+                        toggleElement.focus(); 
                         handled = true;
                     } else if (e.key === 'Tab') {
-                        // If tabbing out of the menu (last item and not Shift+Tab, or first item and Shift+Tab)
                         if ((currentIndex === items.length - 1 && !e.shiftKey) || (currentIndex === 0 && e.shiftKey)) {
                             bsDropdownInstance.hide();
-                            // Allow default Tab behavior to move to the next/previous focusable element outside the menu
                         }
                     }
 
@@ -307,8 +522,9 @@
                          e.stopPropagation();
                     }
                 });
-            }); // End forEach nestedToggles
-       }); // End DOMContentLoaded
+            }); 
+            console.log('Custom dropdown script finished.');
+       }); 
     </script>
 </body>
 </html>
