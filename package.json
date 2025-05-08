@@ -11,7 +11,8 @@
     "lint:scss": "stylelint \"scss/**/*.scss\" --fix",
     "lint": "npm run lint:js && npm run lint:scss",
     "build:scss": "sass scss/main.scss css/main.css --style compressed && postcss css/main.css --replace --use autoprefixer",
-    "watch:scss": "sass --watch scss:css --style compressed"
+    "watch:scss": "sass --watch scss:css --style compressed",
+    "watch:scss:postcss": "onchange 'scss/**/*.scss' -- npm run build:scss"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +25,7 @@
     "eslint-config-airbnb-extended": "^1.0.11",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.2",
+    "onchange": "^7.1.0",
     "postcss": "^8.5.3",
     "postcss-cli": "^11.0.1",
     "postcss-scss": "^4.0.9",
