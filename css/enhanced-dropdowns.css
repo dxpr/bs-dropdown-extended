@@ -103,7 +103,7 @@
     width: 100%; /* Occupy full width of parent list item */
     position: static; /* In document flow */
     border: none;
-    border-top: 1px solid var(--bs-border-color, #dee2e6);
+    /* border-top: 1px solid var(--bs-border-color, #dee2e6); */ /* Removed horizontal border */
     border-radius: 0;
     box-shadow: none;
     padding: 0;
@@ -138,12 +138,12 @@
     
     .dropdown-item,
     .bs-dropdown-item-wrapper {
-        border-bottom: 1px solid var(--bs-border-color-translucent, rgba(0,0,0,0.1));
+        /* border-bottom: 1px solid var(--bs-border-color-translucent, rgba(0,0,0,0.1)); */ /* Removed horizontal border */
     }
     
     .dropdown-item:last-child,
     .bs-dropdown-item-wrapper:last-child {
-        border-bottom: none;
+        border-bottom: none; /* Ensure last item definitely has no border */
     }
     
     /* Nested mobile carets rotation */

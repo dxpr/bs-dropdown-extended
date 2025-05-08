@@ -1,9 +1,10 @@
-// This file is for testing ESLint and Husky
+// Test file for ESLint
 
-function  badlyFormattedFunction( arg1,arg2){
-console.log('This should trigger a console error and formatting issues.');
-    const unUsedVar = 5;
-  return arg1+arg2;
+function testFunction(param1, param2) {
+  if (param1 === param2) {
+    return param1 + param2;
+  }
+  return param1 - param2;
 }
 
-export default badlyFormattedFunction; 
+export default testFunction; 
