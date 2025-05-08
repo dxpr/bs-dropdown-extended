@@ -3,869 +3,320 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Landing Page</title>
-    <!-- Bootstrap 5 CSS -->
+    <title>Navigation Menu Refactored</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
     <style>
-        .hero-section {
-            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-            color: white;
-            padding: 100px 0;
+        :root {
+            /* Define custom vars or override BS vars if needed */
+            --menu-focus-bg: #eef2ff; /* Example custom var */
+            --menu-focus-text: #3730a3;
+            --menu-focus-outline: #4f46e5;
         }
-        .feature-icon {
-            font-size: 2.5rem;
-            color: #4f46e5;
-            margin-bottom: 1rem;
+
+        body {
+            background-color: var(--bs-light-bg-subtle, #f8fafc);
+            padding-top: 70px; /* Prevent content overlap below fixed navbar */
         }
-        .section-padding {
-            padding: 80px 0;
-        }
-        /* WCAG AAA & Modern Nav Styles */
+
+        /* Navbar Customization */
         .navbar {
-            font-size: 1.15rem;
-            font-weight: 500;
-            letter-spacing: 0.02em;
-            background: #fff !important;
-            border-bottom: 1px solid #e5e7eb;
+            background-color: var(--bs-body-bg, #fff) !important; /* Use BS var */
+            border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+            padding-top: 0.75rem; 
+            padding-bottom: 0.75rem;
         }
+
         .navbar-brand {
-            font-size: 2rem;
+            font-size: 1.75rem; /* Slightly adjusted */
             font-weight: 700;
-            color: #222 !important;
         }
+
         .navbar-nav .nav-link {
-            color: #333 !important;
-            padding: 0.75rem 1rem;
-            border-radius: 0.375rem;
-            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-            outline: none;
+            color: var(--bs-body-color, #212529);
             font-weight: 500;
+            padding: 0.5rem 1rem; /* Adjusted padding */
+            border-radius: var(--bs-border-radius, 0.375rem);
+            transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
         }
-        .navbar-nav .nav-link:focus,
-        .navbar-nav .nav-link:hover,
-        .navbar-nav .show > .nav-link,
-        .dropdown-item:focus,
-        .dropdown-item:hover {
-            background: #eef2ff;
-            color: #3730a3 !important;
-            outline: 2px solid #4f46e5;
-            outline-offset: 1px;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-        }
-        .navbar-nav .nav-link.active-nav-item,
-        .dropdown-menu .dropdown-item.active-nav-item {
-            font-weight: 700;
-            color: #4f46e5 !important;
-            background-color: transparent;
-            box-shadow: none;
-        }
-        .navbar-nav .nav-link.active-nav-item:focus,
-        .dropdown-menu .dropdown-item.active-nav-item:focus {
-            background: #eef2ff;
-            color: #3730a3 !important;
-            outline: 2px solid #4f46e5;
-            outline-offset: 1px;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-        }
-        .dropdown-menu {
-            border-radius: 0.75rem;
-            box-shadow: 0 6px 12px rgba(60,60,60,0.1);
-            border: 1px solid #dee2e6;
-            padding: 0.5rem 0;
-            min-width: 200px;
-        }
-        .dropdown-item {
-            font-size: 1rem;
-            color: #333;
-            padding: 0.6rem 1.2rem;
-            border-radius: 0.25rem;
-            transition: background 0.2s, color 0.2s;
-            font-weight: 500;
-        }
-        .dropdown-item:focus {
-            /* outline: none; Already handled by general focus style */
-        }
-        .dropdown-submenu > .dropdown-item.dropdown-toggle:after {
-            content: '\25B6';
-            float: right;
-            margin-left: 0.5em;
-            font-size: 0.9em;
-            transition: transform 0.2s ease-in-out;
-        }
-        .dropdown-submenu > .dropdown-item.dropdown-toggle[aria-expanded="true"]:after {
-            transform: rotate(90deg);
-        }
-        .dropdown-submenu > .dropdown-menu {
-            top: -0.5rem;
-            left: 100%;
-            margin-top: 0;
-            margin-left: 0.1rem;
-            border-radius: 0.75rem;
-            min-width: 180px;
-        }
-        .dropdown-submenu:focus-within > .dropdown-item.dropdown-toggle {
-            /* background: transparent; */
-            /* color: #333 !important; */
-        }
+
         .navbar-toggler {
-            border-radius: 0.5rem;
-            border: 1px solid #c7d2fe;
-            padding: 0.5rem 0.75rem;
+            border-color: var(--bs-border-color-translucent, rgba(0,0,0,0.1));
         }
         .navbar-toggler:focus {
-            outline: 3px solid #6366f1;
-            outline-offset: 2px;
+            box-shadow: 0 0 0 var(--bs-focus-ring-width, 0.25rem) var(--bs-focus-ring-color, rgba(13, 110, 253, 0.25));
         }
+
+        /* Dropdown Base Customization */
+        .dropdown-menu {
+            border-radius: var(--bs-border-radius-lg, 0.5rem); /* Larger radius */
+            box-shadow: var(--bs-box-shadow-sm, 0 .125rem .25rem rgba(0,0,0,.075));
+            border-color: var(--bs-border-color-translucent, rgba(0,0,0,0.1));
+        }
+
+        /* Nested Dropdown Menu (Level 3) */
+        .dropdown-submenu > .dropdown-menu {
+            /* Ensure it behaves like standard dropdown opening downwards */
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 1000;
+            display: none; /* Controlled by JS/Bootstrap */
+            /* Inherits most styles from .dropdown-menu */
+            /* Reset any potentially conflicting inherited styles if needed */
+             margin-top: var(--bs-dropdown-spacer, .125rem); 
+        }
+
+        /* Ensure parent LI can position the nested menu */
+        .dropdown-submenu {
+            position: relative; /* Crucial for absolute positioning of child menu */
+        }
+        
+        /* Dropdown Item Styling & States */
+        .dropdown-item {
+            color: var(--bs-body-color, #212529);
+            transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+            padding-top: 0.5rem; 
+            padding-bottom: 0.5rem;
+        }
+
+        /* Focus/Hover States */
+        .navbar-nav .nav-link:focus, 
+        .navbar-nav .nav-link:hover, 
+        .dropdown-item:focus, 
+        .dropdown-item:hover {
+            color: var(--menu-focus-text, #3730a3);
+            background-color: var(--menu-focus-bg, #eef2ff);
+            outline: none; /* Remove default outline if using box-shadow for focus */
+        }
+
+         /* Explicit Focus Visible Styling for Accessibility */
+        .navbar-nav .nav-link:focus-visible, 
+        .dropdown-item:focus-visible {
+            outline: 2px solid var(--menu-focus-outline, #4f46e5);
+            outline-offset: 2px;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        /* Active state */
+        .navbar-nav .nav-link.active, 
+        .dropdown-item.active {
+            font-weight: 600;
+            color: var(--bs-primary-text-emphasis, #052c65);
+            background-color: var(--bs-primary-bg-subtle, #cfe2ff);
+        }
+
+        /* Caret Styling (Using Bootstrap default via .dropdown-toggle::after) */
+        .dropdown-toggle::after {
+            transition: transform 0.2s ease-in-out;
+            color: inherit; /* Inherit color */
+        }
+        /* Rotate caret when expanded */
+        .dropdown-toggle[aria-expanded="true"]::after {
+            transform: rotate(180deg);
+        }
+
+        /* Indentation */
+        .navbar-nav .dropdown-menu .dropdown-item {
+            padding-left: 1.25rem;
+        }
+        .dropdown-submenu > .dropdown-menu .dropdown-item {
+            padding-left: 2.25rem; /* Make this distinct */
+        }
+        
+        /* Mobile adjustments */
         @media (max-width: 991.98px) {
             .navbar-collapse.show {
-                box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-                border-top: 1px solid #e5e7eb;
-                background-color: #fff;
-            }
-            .navbar-nav .nav-link {
-                padding: 0.8rem 1rem;
-                font-size: 1.1rem;
-                display: block;
-                width: 100%;
+                box-shadow: var(--bs-box-shadow, 0 .5rem 1rem rgba(0,0,0,.15));
+                border-top: 1px solid var(--bs-border-color, #dee2e6);
             }
             .dropdown-menu {
-                min-width: 100%;
-                box-shadow: none;
-                border-radius: 0;
-                border-left: none;
-                border-right: none;
-                border-bottom: none;
-                margin-top: 0;
+                 box-shadow: none; /* Remove shadow for inline mobile menus */
+                 border: none; /* Remove border for inline mobile menus */
             }
-            .dropdown-item {
-                padding: 0.8rem 1.5rem;
-                border-bottom: 1px solid #f0f0f0;
+             .dropdown-item {
+                 border-bottom: 1px solid var(--bs-border-color-translucent, rgba(0,0,0,0.1));
+             }
+             .dropdown-item:last-child {
+                 border-bottom: none;
+             }
+             .dropdown-submenu > .dropdown-menu {
+                 border-top: 1px solid var(--bs-border-color-translucent, rgba(0,0,0,0.1));
+             }
+              /* Ensure nested mobile carets point right/down if preferred */
+             .dropdown-submenu > .dropdown-toggle::after {
+                transform: rotate(-90deg); /* Right */
             }
-            .dropdown-item:last-child {
-                border-bottom: none;
+            .dropdown-submenu > .dropdown-toggle[aria-expanded="true"]::after {
+                transform: rotate(0deg);   /* Down */
             }
-            .dropdown-submenu > .dropdown-menu {
-                margin-left: 0;
-                left: 0;
-                width: 100%;
-                border-radius: 0;
-                border-top: 1px solid #e5e7eb;
-            }
-            .dropdown-submenu > .dropdown-item.dropdown-toggle:after {
-                transform: rotate(90deg);
-                float: right;
-            }
-            .dropdown-submenu > .dropdown-item.dropdown-toggle[aria-expanded="false"]:after {
-                transform: rotate(0deg);
-            }
-            .dropdown-submenu > .dropdown-toggle-split-button.dropdown-toggle[aria-expanded="false"]::after {
-                 transform: rotate(0deg); /* Mobile nested expanded: point down - wait, collapsed should be -90deg (right) */
-                 /* Correcting: collapsed should be right, expanded down for nested mobile */
-            }
-            /* Corrected rules for mobile nested submenu toggle icons */
-            .dropdown-submenu > .dropdown-toggle-split-button.dropdown-toggle::after { /* For BS Caret */
-                transform: rotate(-90deg); /* Point right when collapsed */
-            }
-            .dropdown-submenu > .dropdown-toggle-split-button.dropdown-toggle[aria-expanded="true"]::after { /* For BS Caret */
-                transform: rotate(0deg);   /* Point down when expanded */
-            }
+        }
 
-            /* Layout for li.dropdown-submenu on mobile */
-            li.dropdown-submenu { 
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                /* The li itself is an item in a list, might inherit .dropdown-item styles like padding/border */
-                /* If li.dropdown-submenu also gets .dropdown-item class, its border needs handling */
-            }
-            li.dropdown-submenu > a.dropdown-item {
-                flex-grow: 1; 
-                border-bottom: none !important; /* Prevent double border if li has one */
-                /* me-1 on the link might not be strictly needed now */
-            }
-            li.dropdown-submenu > button.dropdown-toggle-split-button {
-                flex-shrink: 0; 
-            }
-        }
-        /* High contrast for AAA */
-        body, .bg-light {
-            background: #f8fafc !important;
-        }
-        .navbar, .dropdown-menu, .bg-light {
-            color: #111;
-        }
-        /* 3rd-level dropdown styles */
-        .dropdown-submenu > .dropdown-menu {
-            top: 0;
-            left: 100%;
-            margin-top: -0.5rem;
-            margin-left: 0.1rem;
-            border-radius: 1rem;
-            min-width: 200px;
-        }
-        .dropdown-submenu > .dropdown-item:after {
-            content: '\25B6'; /* Right pointing triangle */
-            float: right;
-            margin-left: 0.5em;
-            font-size: 0.9em;
-            transition: transform 0.2s ease-in-out;
-        }
-        .dropdown-submenu > .dropdown-item[aria-expanded="true"]:after {
-            transform: rotate(90deg); /* Down pointing triangle when open */
-        }
-        .dropdown-submenu:hover > .dropdown-menu,
-        .dropdown-submenu:focus-within > .dropdown-menu {
+        /* Explicitly ensure the .show class makes the nested menu visible */
+        .dropdown-submenu > .dropdown-menu.show {
             display: block;
-        }
-        .dropdown-submenu > .dropdown-menu {
-            display: none;
-            position: absolute;
-        }
-        .dropdown-submenu > .dropdown-item:focus {
-            background: #e0e7ff;
-            color: #1e40af;
-            /* Outline handled by general .dropdown-item:focus */
-        }
-        /* Skip to Main Content Link */
-        .skip-to-main-content {
-            position: absolute;
-            left: -9999px;
-            top: auto;
-            width: 1px;
-            height: 1px;
-            overflow: hidden;
-            z-index: -999;
-            color: #fff;
-            background-color: #4f46e5;
-            padding: 15px;
-            text-decoration: none;
-            border-radius: 0 0 5px 5px;
-        }
-        .skip-to-main-content:focus {
-            left: 50%;
-            transform: translateX(-50%);
-            top: 0;
-            width: auto;
-            height: auto;
-            overflow: auto;
-            z-index: 1056; /* Higher than navbar */
-            outline: 3px solid #6366f1;
-            outline-offset: 2px;
-        }
-        /* Split Dropdown Toggle Button Styling */
-        .nav-item > .dropdown-toggle-split-button {
-            background: transparent;
-            border: none;
-            padding: 0.75rem 0.75rem; /* Increased padding for larger target size */
-            color: #333 !important; /* Caret color - ensure high contrast */
-            border-radius: 0.375rem;
-            line-height: inherit; 
-            min-width: 44px; /* Ensure minimum width */
-            min-height: 44px; /* Ensure minimum height - might affect layout, use padding carefully */
-            display: inline-flex; /* To center caret if it's a pseudo-element */
-            align-items: center;
-            justify-content: center;
-        }
-        .nav-item > .dropdown-toggle-split-button:after { 
-            margin-left: 0.255em; 
-            color: #111; /* Explicit very dark caret for AAA contrast */
-            border-top-color: #111; /* For Bootstrap default caret */
-            border-bottom-color: #111;
-            border-left-color: #111;
-            border-right-color: #111;
-        }
-        /* Active Navigation Item State - Applied to the link part */
-        .navbar-nav .nav-link.active-nav-item,
-        .dropdown-menu .dropdown-item.active-nav-item {
-            font-weight: 700; /* Bolder font for active item */
-        }
-        .dropdown-submenu > .dropdown-item.dropdown-toggle:after { /* Specific for submenu toggles */
-           /* This will be replaced by the split button approach if we nest them similarly */
-            content: '\25B6'; 
-            float: right;
-            margin-left: 0.5em;
-            font-size: 0.9em;
-            transition: transform 0.2s ease-in-out;
-        }
-         /* For split button in submenu */
-        .dropdown-submenu > .dropdown-toggle-split-button:after {
-            margin-left: 0.255em;
-        }
-        .dropdown-submenu > .dropdown-item.dropdown-toggle[aria-expanded="true"]:after, 
-        .dropdown-submenu > .dropdown-toggle-split-button[aria-expanded="true"]:after { /* Specific for submenu toggles */
-            transform: rotate(90deg); /* Down pointing triangle when open */
-        }
-        .dropdown-submenu:hover > .dropdown-menu,
-        .dropdown-submenu:focus-within > .dropdown-menu {
-            display: block;
-        }
-        .dropdown-submenu > .dropdown-menu {
-            display: none;
-            position: absolute;
-        }
-        .dropdown-submenu > .dropdown-item:focus {
-            background: #e0e7ff;
-            color: #1e40af;
-            /* Outline handled by general .dropdown-item:focus */
-        }
-        .navbar-nav .nav-link {
-            padding: 0.8rem 1rem; /* Adjusted mobile padding */
-            font-size: 1.1rem; /* Adjusted mobile font size */
-            display: inline-block; /* Allow button next to it */
-            width: auto; /* Don't take full width */
-        }
-        .nav-item > .dropdown-toggle-split-button {
-            display: inline-block;
-            padding: 0.8rem 0.75rem;
-        }
-        .nav-item.dropdown {
-            display: flex; /* Align link and button */
-            flex-wrap: wrap; /* Allow items to wrap if needed on very small screens */
-            align-items: center;
-        }
-        .navbar-collapse.show .nav-item.dropdown > .nav-link { /* Link part in mobile */
-            flex-grow: 1; /* Link takes available space */
-        }
-        .navbar-collapse.show .nav-item.dropdown > .dropdown-toggle-split-button { /* Button part in mobile */
-            /* flex-grow: 0; */ /* Button keeps its size */
-        }
-        .dropdown-menu {
-            .dropdown-submenu > .dropdown-item.dropdown-toggle:after,
-            .dropdown-submenu > .dropdown-toggle-split-button:after {
-                transform: rotate(90deg); /* Always down on mobile for submenus */
-                float: right; /* Ensure it stays right */
-            }
-            .dropdown-submenu > .dropdown-item.dropdown-toggle[aria-expanded="false"]:after,
-            .dropdown-submenu > .dropdown-toggle-split-button[aria-expanded="false"]:after {
-                 transform: rotate(0deg); /* Point right when collapsed on mobile */
-            }
-        }
-        /* Caret styling for split buttons */
-        /* Common for all split button carets */
-        .dropdown-toggle-split-button.dropdown-toggle::after {
-            transition: transform 0.2s ease-in-out;
-            transform: rotate(0deg); /* Default: Point down */
-        }
-        .dropdown-toggle-split-button.dropdown-toggle[aria-expanded="true"]::after {
-            transform: rotate(180deg); /* Point up when expanded */
-        }
-
-        /* Desktop: Submenu toggles point right when collapsed, down when expanded */
-        /* REMOVING desktop-specific side-opening caret styling */
-        /* @media (min-width: 992px) {
-            .dropdown-submenu > .dropdown-toggle-split-button.dropdown-toggle::after {
-                transform: rotate(-90deg); 
-            }
-            .dropdown-submenu > .dropdown-toggle-split-button.dropdown-toggle[aria-expanded="true"]::after {
-                transform: rotate(0deg); 
-            }
-        } */
-
-        /* Mobile: All toggles effectively point down or are Bootstrap default */
-        /* REMOVING mobile-specific caret styling as it's covered by the common style now */
-        /* @media (max-width: 991.98px) {
-            .nav-item.dropdown > .dropdown-toggle-split-button.dropdown-toggle::after { 
-                 transform: rotate(0deg); 
-            }
-            .nav-item.dropdown > .dropdown-toggle-split-button.dropdown-toggle[aria-expanded="true"]::after {
-                 transform: rotate(180deg); 
-            }
-            .dropdown-submenu > .dropdown-toggle-split-button.dropdown-toggle::after {
-                transform: rotate(-90deg); 
-            }
-            .dropdown-submenu > .dropdown-toggle-split-button.dropdown-toggle[aria-expanded="true"]::after {
-                transform: rotate(0deg); 
-            }
-        } */
-
-        .dropdown-submenu {
-            position: relative; /* Needed for absolute positioning of its child .dropdown-menu */
-        }
-
-        .dropdown-submenu > .dropdown-menu {
-            /* Styles for opening downwards, like a root dropdown menu, but nested */
-            position: absolute; /* Position it relative to .dropdown-submenu */
-            top: 100%; /* Position it below the parent item */
-            left: 0; /* Align to the left of the parent item */
-            z-index: 1000; /* Ensure it's above other content */
-            display: none; /* Hidden by default, shown by Bootstrap JS */
-            float: left; /* Bootstrap default */
-            min-width: 10rem; /* Bootstrap default or adjust as needed */
-            padding: 0.5rem 0; /* Bootstrap default */
-            margin: 0.125rem 0 0; /* Bootstrap default */
-            font-size: 1rem; /* Bootstrap default */
-            color: #212529; /* Bootstrap default */
-            text-align: left; /* Bootstrap default */
-            list-style: none;
-            background-color: #fff; /* Bootstrap default */
-            background-clip: padding-box; /* Bootstrap default */
-            border: 1px solid rgba(0,0,0,.15); /* Bootstrap default */
-            border-radius: 0.375rem; /* Bootstrap default */
-            box-shadow: 0 0.5rem 1rem rgba(0,0,0,.175); /* Bootstrap default shadow */
-            
-            /* Customization: Indent nested items slightly more for clarity */
-            /* Apply to .dropdown-item within this specific nested menu if needed */
-            /* Or, if all items need more padding: */
-            /* padding-left: 1.5rem; /* Example: More indentation for items */
-        }
-
-        /* Ensure items within the third level still get some indentation */
-        .dropdown-submenu > .dropdown-menu .dropdown-item {
-            padding-left: 2.25rem; /* Deeper indentation for third-level items */
-        }
-
-        /* REMOVE Class to make submenu open to the left */
-        /* .dropdown-submenu > .dropdown-menu.opens-left {
-            left: auto;
-            right: 100%;
-            margin-left: 0;
-            margin-right: 0.1rem;
-        } */
-
-        /* REMOVE Desktop hover/focus to show submenu - ensure this is fully removed or commented */
-        /* 
-         @media (min-width: 992px) {
-            .dropdown-submenu:hover > .dropdown-menu,
-            .dropdown-submenu:focus-within > .dropdown-menu {
-                 display: block; 
-            }
-        } 
-        */
-
-        /* Force submenus to be hidden unless explicitly shown by JS (via .show class) */
-        /* This aims to prevent any residual hover/focus-within issues from displaying them */
-        .dropdown-submenu:hover > .dropdown-menu:not(.show),
-        .dropdown-submenu:focus-within > .dropdown-menu:not(.show) {
-            display: none !important;
-        }
-
-        /* Ensure items within the third level still get some indentation */
-        .dropdown-submenu > .dropdown-menu .dropdown-item {
-            padding-left: 2.25rem; /* Deeper indentation for third-level items */
-        }
-
-        /* Attempt to hide any rogue pseudo-elements on the performance link itself */
-        #performanceLink::after,
-        #performanceLink::before {
-            display: none !important;
-            content: none !important;
-        }
-
-        /* Ensure items within the third level still get some indentation */
-        /* Default padding for first/second level items within any .dropdown-menu */
-        .navbar-nav .dropdown-menu .dropdown-item { /* Catches 2nd level and 3rd if not overridden */
-            padding-left: 1.25rem; 
         }
     </style>
 </head>
 <body>
-    <a href="#main-content" class="skip-to-main-content">Skip to Main Content</a>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top" role="navigation" aria-label="Main Navigation">
+    <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="#" tabindex="0">Brand</a>
+            <a class="navbar-brand" href="#">Brand</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation menu">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto" role="menubar">
                     <li class="nav-item" role="none">
-                        <a class="nav-link" href="#home" role="menuitem" tabindex="0">Home</a>
+                        <a class="nav-link" href="#home" role="menuitem">Home</a>
                     </li>
                     <li class="nav-item dropdown" role="none">
-                        <a class="nav-link me-1" href="#features" id="featuresLink" role="menuitem" tabindex="0">Features</a>
-                        <button class="btn dropdown-toggle dropdown-toggle-split dropdown-toggle-split-button" type="button" id="featuresDropdownToggle" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-label="Toggle Features submenu" tabindex="0">
-                            <span class="visually-hidden">Toggle Features submenu</span>
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="featuresDropdownToggle" role="menu">
-                            <li role="none"><a class="dropdown-item" href="#features" role="menuitem" tabindex="0">Features Overview</a></li>
-                            <li role="none" class="dropdown-submenu position-relative">
-                                <a class="dropdown-item me-1" href="#features" id="performanceLink" role="menuitem" tabindex="0">Performance</a>
-                                <button class="btn dropdown-toggle dropdown-toggle-split dropdown-toggle-split-button" type="button" id="performanceDropdownToggle" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-label="Toggle Performance submenu" tabindex="0">
-                                    <span class="visually-hidden">Toggle Performance submenu</span>
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="performanceDropdownToggle" role="menu">
-                                    <li role="none"><a class="dropdown-item" href="#features" role="menuitem" tabindex="0">Performance Overview</a></li>
-                                    <li role="none"><a class="dropdown-item" href="#features" role="menuitem" tabindex="0">Speed</a></li>
-                                    <li role="none"><a class="dropdown-item" href="#features" role="menuitem" tabindex="0">Scalability</a></li>
-                                    <li role="none"><a class="dropdown-item" href="#features" role="menuitem" tabindex="0">Reliability</a></li>
+                        <a class="nav-link dropdown-toggle" href="#features" id="featuresDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Features
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="featuresDropdown">
+                            <li><a class="dropdown-item" href="#features" role="menuitem">Features Overview</a></li>
+                            <li class="dropdown-submenu" role="none">
+                                <a class="dropdown-item dropdown-toggle" href="#features-performance" id="performanceDropdown" role="button" aria-expanded="false">
+                                    Performance
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="performanceDropdown">
+                                    <li><a class="dropdown-item" href="#features-performance" role="menuitem">Performance Overview</a></li>
+                                    <li><a class="dropdown-item" href="#features-speed" role="menuitem">Speed</a></li>
+                                    <li><a class="dropdown-item" href="#features-scalability" role="menuitem">Scalability</a></li>
+                                    <li><a class="dropdown-item" href="#features-reliability" role="menuitem">Reliability</a></li>
                                 </ul>
                             </li>
-                            <li role="none"><a class="dropdown-item" href="#features" role="menuitem" tabindex="0">Security</a></li>
-                            <li role="none"><a class="dropdown-item" href="#features" role="menuitem" tabindex="0">Mobile</a></li>
+                            <li class="dropdown-submenu" role="none">
+                                <a class="dropdown-item dropdown-toggle" href="#features-security" id="securityDropdown" role="button" aria-expanded="false">
+                                    Security
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="securityDropdown">
+                                    <li><a class="dropdown-item" href="#features-security-firewall" role="menuitem">Firewall</a></li>
+                                    <li><a class="dropdown-item" href="#features-security-encryption" role="menuitem">Encryption</a></li>
+                                    <li><a class="dropdown-item" href="#features-security-compliance" role="menuitem">Compliance</a></li>
+                                </ul>
+                            </li>
+                            <li><a class="dropdown-item" href="#features-mobile" role="menuitem">Mobile</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown" role="none">
-                        <a class="nav-link me-1" href="#about" id="aboutLink" role="menuitem" tabindex="0">About</a>
-                        <button class="btn dropdown-toggle dropdown-toggle-split dropdown-toggle-split-button" type="button" id="aboutDropdownToggle" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-label="Toggle About submenu" tabindex="0">
-                            <span class="visually-hidden">Toggle About submenu</span>
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="aboutDropdownToggle" role="menu">
-                            <li role="none"><a class="dropdown-item" href="#about" role="menuitem" tabindex="0">About Overview</a></li>
-                            <li role="none"><a class="dropdown-item" href="#about" role="menuitem" tabindex="0">Our Story</a></li>
-                            <li role="none"><a class="dropdown-item" href="#about" role="menuitem" tabindex="0">Team</a></li>
-                            <li role="none"><a class="dropdown-item" href="#about" role="menuitem" tabindex="0">Careers</a></li>
-                            <li role="none"><a class="dropdown-item" href="#about" role="menuitem" tabindex="0">Press</a></li>
+                        <a class="nav-link dropdown-toggle" href="#about" id="aboutDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            About
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
+                            <li><a class="dropdown-item" href="#about" role="menuitem">About Overview</a></li>
+                            <li><a class="dropdown-item" href="#about-story" role="menuitem">Our Story</a></li>
+                            <li><a class="dropdown-item" href="#about-team" role="menuitem">Team</a></li>
+                            <li><a class="dropdown-item" href="#about-careers" role="menuitem">Careers</a></li>
+                            <li><a class="dropdown-item" href="#about-press" role="menuitem">Press</a></li>
                         </ul>
                     </li>
                     <li class="nav-item" role="none">
-                        <a class="nav-link" href="#contact" role="menuitem" tabindex="0">Contact</a>
+                        <a class="nav-link" href="#contact" role="menuitem">Contact</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero-section" id="main-content">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <h1 class="display-4 fw-bold mb-4">Welcome to Our Platform</h1>
-                    <p class="lead mb-4">Transform your ideas into reality with our innovative solutions.</p>
-                    <a href="#contact" class="btn btn-light btn-lg">Get Started</a>
-                </div>
-                <div class="col-lg-6">
-                    <img src="https://promptahuman.com/600x400@2x?title=Hero%20Image&prompt=Modern%20hero%20image%20showing%20a%20team%20collaborating%20in%20a%20bright%2C%20contemporary%20office%20space.%20Should%20convey%20innovation%20and%20professionalism.%20Natural%20lighting%2C%20diverse%20team%20members%2C%20and%20modern%20technology%20visible." alt="Hero Image" class="img-fluid rounded shadow">
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section id="features" class="section-padding bg-light">
-        <div class="container">
-            <h2 class="text-center mb-5">Our Features</h2>
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body text-center">
-                            <div class="feature-icon">🚀</div>
-                            <h3 class="h5">Fast Performance</h3>
-                            <p class="text-muted">Lightning-fast loading times and smooth interactions.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body text-center">
-                            <div class="feature-icon">🛡️</div>
-                            <h3 class="h5">Secure Platform</h3>
-                            <p class="text-muted">Enterprise-grade security to protect your data.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body text-center">
-                            <div class="feature-icon">📱</div>
-                            <h3 class="h5">Mobile First</h3>
-                            <p class="text-muted">Perfect experience on any device, any screen size.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section id="about" class="section-padding">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <img src="https://promptahuman.com/600x400@2x?title=About%20Us&prompt=Professional%20team%20photo%20in%20a%20modern%20office%20environment.%20Show%20diverse%20team%20members%20engaged%20in%20collaborative%20work.%20Natural%20lighting%2C%20warm%20atmosphere%2C%20and%20authentic%20interactions." alt="About Image" class="img-fluid rounded shadow">
-                </div>
-                <div class="col-lg-6">
-                    <h2 class="mb-4">About Us</h2>
-                    <p class="lead mb-4">We're a team of passionate individuals dedicated to creating amazing experiences.</p>
-                    <p class="text-muted">Our mission is to help businesses grow and succeed in the digital age through innovative solutions and cutting-edge technology.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="section-padding bg-light">
-        <div class="container">
-            <h2 class="text-center mb-5">Get in Touch</h2>
-            <div class="row justify-content-center">
-                <div class="col-lg-6">
-                    <form>
-                        <div class="mb-3">
-                            <input type="text" class="form-control" placeholder="Your Name" required>
-                        </div>
-                        <div class="mb-3">
-                            <input type="email" class="form-control" placeholder="Your Email" required>
-                        </div>
-                        <div class="mb-3">
-                            <textarea class="form-control" rows="5" placeholder="Your Message" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Send Message</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-dark text-light py-4">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <p class="mb-0">&copy; 2024 Your Company. All rights reserved.</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <a href="#" class="text-light me-3">Privacy Policy</a>
-                    <a href="#" class="text-light">Terms of Service</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Bootstrap 5 JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    // Keyboard accessibility for dropdowns (Level 2 and Level 3)
-    document.addEventListener('DOMContentLoaded', function () {
-        // Helper function to handle ARIA attributes and focus for submenu toggles
-        function setupSubmenuToggle(toggleButton, menuElement) {
-            // Ensure the toggle button starts with aria-expanded="false"
-            // Bootstrap typically handles this on init if data-bs-toggle is present
-            // but we can be explicit for robustness.
-            toggleButton.setAttribute('aria-expanded', 'false');
-            menuElement.setAttribute('aria-hidden', 'true');
-
-            // Bootstrap's Dropdown component handles click toggling and ARIA updates for data-bs-toggle="dropdown"
-            // We listen to Bootstrap's events to ensure our ARIA is in sync or to add custom logic.
-            let bsDropdown = new bootstrap.Dropdown(toggleButton);
-
-            // Add a direct click listener to the toggle button to manage its own dropdown
-            // and stop propagation to prevent parent dropdowns from closing.
-            toggleButton.addEventListener('click', function(event) {
-                // Check if the click target is the button itself or its child (the caret span)
-                if (event.target === toggleButton || toggleButton.contains(event.target)) {
-                    event.stopPropagation(); // Prevent event from bubbling to parent dropdowns
-                }
-                // Bootstrap's data-bs-toggle will handle the show/hide of this button's menu
-                // We mainly need to ensure parent menus don't react to this click.
-                
-                // If this is a submenu, we might need to manually ensure other submenus at the same level are closed.
-                // This is more relevant for desktop hover behavior, click behavior should be fine with stopPropagation.
-                /* 
-                if (toggleButton.closest('.dropdown-submenu')) {
-                    const parentMenu = toggleButton.closest('.dropdown-menu');
-                    if (parentMenu) {
-                        parentMenu.querySelectorAll(':scope > .dropdown-submenu > .dropdown-toggle-split-button').forEach(otherToggle => {
-                            if (otherToggle !== toggleButton) {
-                                let otherBsDropdown = bootstrap.Dropdown.getInstance(otherToggle);
-                                if (otherBsDropdown && otherToggle.getAttribute('aria-expanded') === 'true') {
-                                    otherBsDropdown.hide();
-                                }
-                            }
-                        });
-                    }
-                }
-                */
-            });
-
-            toggleButton.addEventListener('shown.bs.dropdown', function () {
-                toggleButton.setAttribute('aria-expanded', 'true');
-                menuElement.setAttribute('aria-hidden', 'false');
-
-                // --- REMOVE: Reposition submenu if it goes off-screen (Desktop only) ---
-                /*
-                if (toggleButton.closest('.dropdown-submenu') && window.innerWidth >= 992) {
-                    const submenuRect = menuElement.getBoundingClientRect();
-                    const viewportWidth = window.innerWidth;
-
-                    menuElement.classList.remove('opens-left');
-                    const currentSubmenuRect = menuElement.getBoundingClientRect(); 
-
-                    if (currentSubmenuRect.right > viewportWidth) {
-                        menuElement.classList.add('opens-left');
-                    } else {
-                        menuElement.classList.remove('opens-left');
-                    }
-                }
-                */
-                // --- END: Reposition submenu --- 
-
-                const firstItem = menuElement.querySelector('.dropdown-item:not(.disabled)');
-                if (firstItem) firstItem.focus();
-            });
-
-            toggleButton.addEventListener('hidden.bs.dropdown', function () {
-                toggleButton.setAttribute('aria-expanded', 'false');
-                menuElement.setAttribute('aria-hidden', 'true');
-                // Focus should remain on the toggle button after closing with Escape, Bootstrap handles this.
-            });
+       console.log('SCRIPT BLOCK START'); 
+       document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOMContentLoaded event fired.'); 
             
-            // Custom keyboard handling for Enter/Space if not fully covered, or for Arrow keys
-            toggleButton.addEventListener('keydown', function (e) {
-                const isSubmenuToggle = toggleButton.closest('.dropdown-submenu');
+            const nestedToggles = document.querySelectorAll('li.dropdown-submenu a.dropdown-toggle'); 
+            console.log(`Found ${nestedToggles.length} nested toggles using selector 'li.dropdown-submenu a.dropdown-toggle'.`);
+
+            nestedToggles.forEach(toggle => {
+                console.log('Processing nested toggle:', toggle.id || 'NO ID!');
+                const menu = toggle.nextElementSibling;
+                if (!menu || !menu.classList.contains('dropdown-menu')) {
+                    console.warn('No valid dropdown menu found for toggle:', toggle);
+                    return; 
+                }
+                // Ensure menu has an ID for aria-labelledby
+                if (!menu.id) { menu.id = (toggle.id || 'menu-for-' + Math.random().toString(36).substring(7)) + '-menu'; }
+                menu.setAttribute('aria-labelledby', toggle.id || menu.id.replace('-menu', ''));
                 
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault(); // Prevent page scroll/default button action
-                    // Simulate click to trigger Bootstrap's logic AND our click listener with stopPropagation
-                    toggleButton.click(); 
-                } else if (isSubmenuToggle && e.key === 'ArrowRight') {
-                    e.preventDefault();
-                    if (toggleButton.getAttribute('aria-expanded') === 'false') {
-                        bsDropdown.show();
-                    } else {
-                        const firstItem = menuElement.querySelector('.dropdown-item:not(.disabled)');
-                        if (firstItem) firstItem.focus();
+                // 1. Manual Initialization
+                // NOTE: Assumes data-bs-toggle is NOT on the nested toggle element itself
+                let bsDropdownInstance = new bootstrap.Dropdown(toggle, {
+                     // autoClose: 'outside' // Keep default behavior
+                });
+                console.log('Initialized BS Dropdown for:', toggle.id || 'NO ID!');
+
+                // 2. Click Handler: Stop propagation and toggle
+                toggle.addEventListener('click', (event) => {
+                    console.log(`Click on ${toggle.id || 'NO ID!'}. Stop propagation.`);
+                    event.stopPropagation(); 
+                    console.log(`Manually calling toggle() for ${toggle.id || 'NO ID!'}`);
+                    bsDropdownInstance.toggle(); 
+                });
+
+                // 3. Keyboard Handler (Enter/Space on Toggle)
+                 toggle.addEventListener('keydown', (e) => {
+                     if (e.key === 'Enter' || e.key === ' ') {
+                         e.preventDefault();
+                         console.log(`Enter/Space on ${toggle.id || 'NO ID!'}. Calling toggle().`);
+                         bsDropdownInstance.toggle();
+                     }
+                 });
+
+                // 4. ARIA Sync & Focus Management
+                toggle.addEventListener('shown.bs.dropdown', () => {
+                    console.log(`shown.bs.dropdown for: ${toggle.id || 'NO ID!'}`);
+                    toggle.setAttribute('aria-expanded', 'true');
+                    const firstItem = menu.querySelector('a.dropdown-item:not(.disabled)');
+                    if(firstItem) {
+                        console.log('Focusing first item:', firstItem);
+                        firstItem.focus();
                     }
-                } else if (!isSubmenuToggle && e.key === 'ArrowDown' && toggleButton.getAttribute('aria-expanded') === 'false') {
-                    e.preventDefault();
-                    bsDropdown.show();
-                }
-            });
-        }
+                });
+                toggle.addEventListener('hidden.bs.dropdown', () => {
+                    console.log(`hidden.bs.dropdown for: ${toggle.id || 'NO ID!'}`);
+                    toggle.setAttribute('aria-expanded', 'false');
+                });
 
-        // Handle keyboard navigation within a menu
-        function setupMenuNavigation(menuElement) {
-            const items = Array.from(menuElement.querySelectorAll('.dropdown-item:not(.disabled):not(.dropdown-toggle-split-button)')); // Exclude nested toggles from item list
-            const parentToggleButton = document.getElementById(menuElement.getAttribute('aria-labelledby'));
+                // 5. Keyboard Nav within Menu
+                menu.addEventListener('keydown', (e) => {
+                    const items = Array.from(menu.querySelectorAll('a.dropdown-item:not(.disabled)'));
+                    if (items.length === 0) return;
+                    const currentIndex = items.indexOf(document.activeElement);
+                    let handled = false;
 
-            menuElement.addEventListener('keydown', function (e) {
-                let currentActiveElement = document.activeElement;
-                // Check if active element is a direct child link or a button within a submenu structure
-                let currentIdx = -1;
-                if (currentActiveElement.classList.contains('dropdown-item') && currentActiveElement.closest('.dropdown-menu') === menuElement) {
-                    currentIdx = items.indexOf(currentActiveElement);
-                } else if (currentActiveElement.classList.contains('dropdown-toggle-split-button') && currentActiveElement.closest('.dropdown-submenu').querySelector('.dropdown-menu') === menuElement) {
-                     // This case is for when focus is on a nested toggle button within *this* menu's items
-                     // We need to find its associated link to get the correct index if we treat link+button as one item
-                     let associatedLink = currentActiveElement.previousElementSibling.classList.contains('dropdown-item') ? currentActiveElement.previousElementSibling : null;
-                     if(associatedLink) currentIdx = items.indexOf(associatedLink);
-                }
-
-                const isSubmenuOfSubmenu = menuElement.parentElement.classList.contains('dropdown-submenu');
-
-                if (e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    if (currentIdx < items.length - 1) items[currentIdx + 1].focus();
-                    else items[0].focus();
-                } else if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    if (currentIdx > 0) items[currentIdx - 1].focus();
-                    else items[items.length - 1].focus();
-                } else if (e.key === 'Escape') {
-                    e.preventDefault();
-                    if (parentToggleButton) {
-                        let bsDropdownInstance = bootstrap.Dropdown.getInstance(parentToggleButton);
-                        if (bsDropdownInstance) bsDropdownInstance.hide();
-                        parentToggleButton.focus();
-                    }
-                } else if (isSubmenuOfSubmenu && e.key === 'ArrowLeft') {
-                    e.preventDefault();
-                    if (parentToggleButton) {
-                        let bsDropdownInstance = bootstrap.Dropdown.getInstance(parentToggleButton);
-                        if (bsDropdownInstance) bsDropdownInstance.hide();
-                        parentToggleButton.focus();
-                    }
-                } else if (e.key === 'Tab') {
-                    if ((currentIdx === items.length - 1 && !e.shiftKey) || (currentIdx === 0 && e.shiftKey)) {
-                        if (parentToggleButton) {
-                            let mainBsDropdown = bootstrap.Dropdown.getInstance(parentToggleButton.closest('.nav-item.dropdown')?.querySelector('.dropdown-toggle-split-button'));
-                            if (mainBsDropdown) mainBsDropdown.hide();
+                    if (e.key === 'ArrowDown') {
+                        const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % items.length : 0;
+                        items[nextIndex].focus();
+                        handled = true;
+                    } else if (e.key === 'ArrowUp') {
+                        const prevIndex = currentIndex >= 0 ? (currentIndex - 1 + items.length) % items.length : items.length - 1;
+                        items[prevIndex].focus();
+                        handled = true;
+                    } else if (e.key === 'Escape' || e.key === 'ArrowLeft') { 
+                        console.log(`Esc/Left in menu for ${toggle.id || 'NO ID!'}. Hiding.`);
+                        bsDropdownInstance.hide(); 
+                        toggle.focus();
+                        handled = true;
+                    } else if (e.key === 'Tab') {
+                        if ((currentIndex === items.length - 1 && !e.shiftKey) || (currentIndex === 0 && e.shiftKey)) {
+                             console.log(`Tabbing out of menu for ${toggle.id || 'NO ID!'}. Hiding.`);
+                            bsDropdownInstance.hide();
                         }
                     }
-                }
-                 // If current focus is on a link that has an adjacent split button for a submenu
-                let currentFocusedLink = document.activeElement;
-                if (currentFocusedLink.classList.contains('dropdown-item') && currentFocusedLink.nextElementSibling && currentFocusedLink.nextElementSibling.classList.contains('dropdown-toggle-split-button')) {
-                    if (e.key === 'ArrowRight') {
-                        e.preventDefault();
-                        currentFocusedLink.nextElementSibling.focus(); // Focus the split button
-                        // Optionally, open its menu: bootstrap.Dropdown.getInstance(currentFocusedLink.nextElementSibling).show();
+                    if (handled) {
+                         e.preventDefault();
+                         e.stopPropagation(); 
                     }
-                }
-            });
-        }
+                });
 
-        // Initialize all dropdowns (main nav and submenus)
-        document.querySelectorAll('.nav-item.dropdown, .dropdown-submenu').forEach(function (menuContainer) {
-            const toggleButton = menuContainer.querySelector('.dropdown-toggle-split-button');
-            // The menu is the next sibling <ul> for .nav-item.dropdown, or the child <ul> for .dropdown-submenu
-            let menuElement = menuContainer.matches('.nav-item.dropdown') 
-                                ? menuContainer.querySelector('.dropdown-menu') 
-                                : menuContainer.querySelector(':scope > .dropdown-menu');
+            }); // End forEach nestedToggles
 
-            if (toggleButton && menuElement) {
-                // Ensure menu has an ID if it doesn't, and aria-controls is set on toggle
-                if (!menuElement.id) {
-                    menuElement.id = toggleButton.id + '-menu';
-                }
-                toggleButton.setAttribute('aria-controls', menuElement.id);
-                
-                setupSubmenuToggle(toggleButton, menuElement);
-                setupMenuNavigation(menuElement);
-            }
-        });
-        
-        // Active state for direct links based on scroll
-        const sections = document.querySelectorAll('section[id]');
-        const navLinks = document.querySelectorAll('.navbar-nav .nav-link, .dropdown-menu .dropdown-item'); // Include all potential links
-        const observerOptions = {
-            root: null, // relative to document viewport
-            rootMargin: '0px',
-            threshold: 0.5 // 50% of section visible
-        };
+            // NOTE: Top-level keyboard nav helpers removed for simplicity for now.
+            // Bootstrap defaults via data-bs-toggle handle top level reasonably well.
 
-        const sectionObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    navLinks.forEach(link => {
-                        link.classList.remove('active-nav-item');
-                        if (link.getAttribute('href') === '#' + entry.target.id || 
-                            (link.classList.contains('dropdown-toggle') && link.getAttribute('href') === '#' + entry.target.id) ||
-                            (link.closest('.dropdown-menu') && link.closest('.dropdown-menu').previousElementSibling.getAttribute('href') === '#' + entry.target.id && (link.textContent.includes('Overview') || link.href === '#' + entry.target.id))
-                           ) {
-                            link.classList.add('active-nav-item');
-                            // Also activate parent dropdown toggle if a sub-item is active
-                            const parentDropdownToggle = link.closest('.nav-item.dropdown')?.querySelector('.nav-link.dropdown-toggle');
-                            if (parentDropdownToggle) {
-                                parentDropdownToggle.classList.add('active-nav-item');
-                            }
-                             const parentSubmenuToggle = link.closest('.dropdown-submenu')?.querySelector('.dropdown-item.dropdown-toggle');
-                            if (parentSubmenuToggle) {
-                                parentSubmenuToggle.classList.add('active-nav-item');
-                            }
-                        }
-                    });
-                }
-            });
-        }, observerOptions);
-
-        sections.forEach(section => {
-            sectionObserver.observe(section);
-        });
-        
-        // Handle click on nav links for immediate active state (for fragment links)
-        navLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                // Only apply to links that are not dropdown toggles themselves
-                if (link.href && link.href.includes('#') && !link.classList.contains('dropdown-toggle-split-button') && !link.hasAttribute('data-bs-toggle')) { 
-                    navLinks.forEach(el => el.classList.remove('active-nav-item'));
-                    link.classList.add('active-nav-item');
-                    
-                    // Also activate parent link if this is an "Overview" item or similar
-                    const parentNavItemLink = link.closest('.nav-item.dropdown')?.querySelector('.nav-link');
-                    if (parentNavItemLink) {
-                        parentNavItemLink.classList.add('active-nav-item');
-                    }
-                    const parentSubmenuLink = link.closest('.dropdown-submenu')?.querySelector(':scope > .dropdown-item');
-                    if (parentSubmenuLink) {
-                        parentSubmenuLink.classList.add('active-nav-item');
-                    }
-                }
-            });
-        });
-
-    });
+       }); // End DOMContentLoaded
+       console.log('SCRIPT BLOCK END');
     </script>
 </body>
 </html>
