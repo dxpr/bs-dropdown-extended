@@ -1,0 +1,35 @@
+{
+  "name": "bootstrap5-enhanced-dropdowns",
+  "version": "1.0.0",
+  "description": "Enhanced dropdowns for Bootstrap 5 with split button support and better accessibility",
+  "main": "dist/js/enhanced-dropdowns.js",
+  "style": "dist/css/enhanced-dropdowns.css",
+  "scripts": {
+    "build": "mkdir -p dist/css dist/js && cp src/css/enhanced-dropdowns.css dist/css/ && cp src/js/enhanced-dropdowns.js dist/js/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "bootstrap",
+    "bootstrap5",
+    "dropdown",
+    "accessibility",
+    "a11y",
+    "navigation",
+    "menu",
+    "submenu",
+    "split-button"
+  ],
+  "author": "",
+  "license": "MIT",
+  "peerDependencies": {
+    "bootstrap": "^5.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/bootstrap5-enhanced-dropdowns.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/bootstrap5-enhanced-dropdowns/issues"
+  },
+  "homepage": "https://github.com/yourusername/bootstrap5-enhanced-dropdowns#readme"
+} 
