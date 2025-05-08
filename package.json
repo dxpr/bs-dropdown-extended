@@ -7,7 +7,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky",
-    "lint": "eslint . --ext .js,.ts,.jsx,.tsx --fix"
+    "lint:js": "eslint . --ext .js,.ts,.jsx,.tsx --fix",
+    "lint:scss": "stylelint \"scss/**/*.scss\" --fix",
+    "lint": "npm run lint:js && npm run lint:scss",
+    "build:scss": "sass scss/main.scss css/main.css --style compressed && postcss css/main.css --replace --use autoprefixer",
+    "watch:scss": "sass --watch scss:css --style compressed"
   },
   "keywords": [],
   "author": "",
@@ -15,15 +19,25 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.32.0",
     "@typescript-eslint/parser": "^8.32.0",
+    "autoprefixer": "^10.4.21",
     "eslint": "^9.26.0",
     "eslint-config-airbnb-extended": "^1.0.11",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.2",
+    "postcss": "^8.5.3",
+    "postcss-cli": "^11.0.1",
+    "postcss-scss": "^4.0.9",
+    "sass": "^1.87.0",
+    "stylelint": "^16.19.1",
+    "stylelint-config-standard-scss": "^14.0.0",
     "typescript": "^5.8.3"
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx}": [
       "eslint --fix"
+    ],
+    "*.scss": [
+      "stylelint --fix"
     ]
   }
 }
