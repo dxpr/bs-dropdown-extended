@@ -36,7 +36,6 @@ export default [
       'coverage/',
       '*.html',
       '*.py',
-      // 'src/js/test-lint.js', // Temporarily ignore for testing other setup parts if needed
     ],
   }
 ]; 
