@@ -68,7 +68,7 @@ class BootstrapEnhancedDropdowns {
     });
     
     if (focusTargetMenu) { // Only for submenus that need focus on first item
-        eventSourceElement.addEventListener('shown.bs.dropdown', () => {
+      eventSourceElement.addEventListener('shown.bs.dropdown', () => {
         const firstItem = focusTargetMenu.querySelector('.dropdown-item:not(.disabled)');
         if (firstItem) {
           firstItem.focus();
@@ -88,14 +88,14 @@ class BootstrapEnhancedDropdowns {
     let menuId = toggleElement.getAttribute('data-bs-target') || toggleElement.getAttribute('aria-controls');
     let menu = null;
     if (menuId) {
-        menu = document.getElementById(menuId.startsWith('#') ? menuId.substring(1) : menuId);
+      menu = document.getElementById(menuId.startsWith('#') ? menuId.substring(1) : menuId);
     }
     // Fallback for structure where menu is next sibling of the wrapper (splitButton)
     if (!menu && parentWrapperElement) { 
-        menu = parentWrapperElement.nextElementSibling;
-        if (menu && !menu.classList.contains('dropdown-menu')) {
-            menu = null; // Ensure it's actually a dropdown menu
-        }
+      menu = parentWrapperElement.nextElementSibling;
+      if (menu && !menu.classList.contains('dropdown-menu')) {
+        menu = null; // Ensure it's actually a dropdown menu
+      }
     }
     return menu;
   }
