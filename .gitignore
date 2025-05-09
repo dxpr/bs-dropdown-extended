@@ -42,6 +42,7 @@ migrations/
 
 # VSCode
 .vscode/
+.specstory
 
 # SQLite
 *.sqlite3
