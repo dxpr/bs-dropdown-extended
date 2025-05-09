@@ -155,4 +155,64 @@
     .bs-dropdown-submenu > .bs-dropdown-caret[aria-expanded="true"]::after {
         transform: rotate(0deg); /* Point down when open */
     }
+}
+
+// Desktop-only multi-column and full-width dropdown enhancements
+@media (width >= 992px) { // Bootstrap's lg breakpoint
+
+    .nav-item.dropdown.dropdown-full-width {
+        position: static !important;
+
+        > .dropdown-menu {
+            left: 0;
+            right: 0; 
+            width: auto; 
+            max-width: none; 
+            margin-top: 0; // Reset default Bootstrap dropdown offset if parent is static
+            // Add padding to match container gutters, assuming navbar itself is edge-to-edge
+            padding-left: var(--bs-gutter-x, 0.75rem);
+            padding-right: var(--bs-gutter-x, 0.75rem);
+        }
+    }
+
+    .dropdown-menu {
+        &.dropdown-menu-columns-2,
+        &.dropdown-menu-columns-3,
+        &.dropdown-menu-columns-4,
+        &.dropdown-menu-columns-5 {
+            column-gap: 0; // Items have their own padding, direct gap might be excessive
+        }
+
+        &.dropdown-menu-columns-2 { column-count: 2; }
+        &.dropdown-menu-columns-3 { column-count: 3; }
+        &.dropdown-menu-columns-4 { column-count: 4; }
+        &.dropdown-menu-columns-5 { column-count: 5; }
+
+        // Styles for items within multi-column dropdowns
+        &[class*="dropdown-menu-columns-"] {
+            // Fallback for direct A items if not wrapped in LI (though current HTML uses LI)
+            > .dropdown-item {
+                 break-inside: avoid-column;
+                 -webkit-column-break-inside: avoid;
+                 page-break-inside: avoid;
+                 display: block;
+                 width: 100%;
+                 padding-left: var(--bs-dropdown-item-padding-x, 1rem) !important;
+                 padding-right: var(--bs-dropdown-item-padding-x, 1rem) !important;
+            }
+
+            > li { // Target the LI if items are wrapped in LIs
+                 break-inside: avoid-column;
+                 -webkit-column-break-inside: avoid; // Safari/Chrome
+                 page-break-inside: avoid; // Firefox
+                 display: block; 
+                 width: 100%;    
+
+                 > .dropdown-item { // Reset padding for the A tag inside the LI
+                    padding-left: var(--bs-dropdown-item-padding-x, 1rem) !important;
+                    padding-right: var(--bs-dropdown-item-padding-x, 1rem) !important;
+                 }
+            }
+        }
+    }
 } 
