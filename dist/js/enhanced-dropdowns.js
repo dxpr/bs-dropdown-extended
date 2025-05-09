@@ -265,15 +265,15 @@ class BootstrapEnhancedDropdowns {
 
   initAutoColumns() {
     const topLevelMenus = document.querySelectorAll(
-        // Selects dropdown-menu that is a direct child of nav-item.dropdown,
-        // which itself is a direct child of .navbar-nav (top level)
-        '.navbar-nav > .nav-item.dropdown > .dropdown-menu'
+      // Selects dropdown-menu that is a direct child of nav-item.dropdown,
+      // which itself is a direct child of .navbar-nav (top level)
+      '.navbar-nav > .nav-item.dropdown > .dropdown-menu'
     );
 
     topLevelMenus.forEach(menu => {
       // Ensure this menu is not part of a .bs-dropdown-submenu (nested menu)
       if (menu.closest('.bs-dropdown-submenu')) {
-          return;
+        return;
       }
 
       const items = Array.from(menu.children).filter(child => child.tagName === 'LI');
@@ -302,14 +302,14 @@ class BootstrapEnhancedDropdowns {
       }
 
       if (itemCount > 0) {
-          if (numColumns > 1) { // Only add column class if more than 1 column
-            menu.classList.add(`dropdown-menu-columns-${numColumns}`);
-          }
-          // If numColumns is 1, no specific column class is added, it behaves as default.
+        if (numColumns > 1) { // Only add column class if more than 1 column
+          menu.classList.add(`dropdown-menu-columns-${numColumns}`);
+        }
+        // If numColumns is 1, no specific column class is added, it behaves as default.
 
-          if (numColumns >= 3 && parentLi) {
-            parentLi.classList.add('dropdown-full-width');
-          }
+        if (numColumns >= 3 && parentLi) {
+          parentLi.classList.add('dropdown-full-width');
+        }
       }
     });
   }
