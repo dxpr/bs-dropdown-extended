@@ -2,6 +2,8 @@
 
 [![npm downloads](https://img.shields.io/npm/dm/bs-enhanced-dropdowns.svg)](https://www.npmjs.com/package/bs-enhanced-dropdowns)
 
+**[Live Demo of Bootstrap 5 Enhanced Dropdowns](https://dxpr.github.io/bs-dropdown-extended/)**
+
 A powerful enhancement for Bootstrap 5 navigation menus, featuring split dropdown buttons, multi-level submenus, improved keyboard accessibility, and intelligent handling of link behavior based on the `href` attribute.
 
 ## Core Features
