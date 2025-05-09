@@ -1,6 +1,8 @@
-# Enhanced Bootstrap 5 Navigation Menu
+# Bootstrap 5 Enhanced Dropdowns
 
-This project provides an enhanced navigation menu system for Bootstrap 5, featuring split dropdown buttons, multi-level submenus, improved keyboard accessibility, and intelligent handling of link behavior based on the `href` attribute.
+[![npm downloads](https://img.shields.io/npm/dm/bs-enhanced-dropdowns.svg)](https://www.npmjs.com/package/bs-enhanced-dropdowns)
+
+A powerful enhancement for Bootstrap 5 navigation menus, featuring split dropdown buttons, multi-level submenus, improved keyboard accessibility, and intelligent handling of link behavior based on the `href` attribute.
 
 ## Core Features
 
@@ -155,4 +157,4 @@ Wrap your navigation in a `<ul class="navbar-nav" role="menubar">`.
     }
     ```
 
-Refer to `landing-page.html` and `demo.html` for complete examples of implementation. 
+Refer to `index.html` and `demo.html` for complete examples of implementation. 

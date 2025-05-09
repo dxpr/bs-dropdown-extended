@@ -1,9 +1,18 @@
 {
-  "name": "landing-page",
+  "name": "bs-enhanced-dropdowns",
+  "displayName": "Bootstrap 5 Enhanced Dropdowns",
   "version": "1.0.0",
   "description": "This project provides an enhanced navigation menu system for Bootstrap 5, featuring split dropdown buttons, multi-level submenus, improved keyboard accessibility, and intelligent handling of link behavior based on the `href` attribute.",
   "type": "module",
   "main": "dist/js/enhanced-dropdowns.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dxpr/bs-dropdown-extended.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dxpr/bs-dropdown-extended/issues"
+  },
+  "homepage": "https://github.com/dxpr/bs-dropdown-extended#readme",
   "files": [
     "dist",
     "src"
@@ -14,14 +23,14 @@
     "lint:js": "eslint . --ext .js,.ts,.jsx,.tsx --fix",
     "lint:scss": "stylelint \"src/scss/**/*.scss\" --fix",
     "lint": "npm run lint:js && npm run lint:scss",
-    "build:scss:min": "sass src/scss/main.scss dist/css/main.min.css --style compressed && postcss dist/css/main.min.css --replace --use autoprefixer",
-    "build:scss:full": "sass src/scss/main.scss dist/css/main.css --style expanded && postcss dist/css/main.css --replace --use autoprefixer",
+    "build:scss:min": "sass src/scss/main.scss dist/css/main.min.css --style compressed --no-source-map && postcss dist/css/main.min.css --replace --use autoprefixer",
+    "build:scss:full": "sass src/scss/main.scss dist/css/main.css --style expanded --no-source-map && postcss dist/css/main.css --replace --use autoprefixer",
     "build:scss": "npm run build:scss:min && npm run build:scss:full",
-    "build:js:min": "mkdir -p dist/js && terser src/js/enhanced-dropdowns.js -o dist/js/enhanced-dropdowns.min.js",
+    "build:js:min": "mkdir -p dist/js && terser src/js/enhanced-dropdowns.js -o dist/js/enhanced-dropdowns.min.js --no-source-map",
     "build:js:full": "mkdir -p dist/js && cp src/js/enhanced-dropdowns.js dist/js/",
     "build:js": "npm run build:js:min && npm run build:js:full",
     "build": "npm run build:scss && npm run build:js",
-    "watch:scss": "sass --watch src/scss:dist/css --style compressed",
+    "watch:scss": "sass --watch src/scss:dist/css --style compressed --no-source-map",
     "watch:scss:postcss": "onchange 'src/scss/**/*.scss' -- npm run build:scss",
     "watch:js": "onchange 'src/js/**/*.js' -- npm run build:js",
     "watch": "concurrently \"npm run watch:scss:postcss\" \"npm run watch:js\""

@@ -8,8 +8,8 @@ APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 @app.route('/')
 def home():
-    # Serve 'landing-page.html' from the same directory as app.py
-    return send_from_directory(APP_ROOT, 'landing-page.html')
+    # Serve 'index.html' from the same directory as app.py
+    return send_from_directory(APP_ROOT, 'index.html')
 
 # Route to serve static files (CSS, JS) from the dist directory
 @app.route('/dist/<path:filepath>')
