@@ -101,12 +101,8 @@
 .bs-dropdown-submenu > .dropdown-menu {
     display: none; /* Controlled by JS/Bootstrap for show/hide */
     width: 100%; /* Occupy full width of parent list item */
-    position: static; /* In document flow */
+    position: static !important; /* Always in document flow for L2+ dropdowns */
     border: none;
-
-    /* border-top: 1px solid var(--bs-border-color, #dee2e6); */
-
- /* Removed horizontal border */
     border-radius: 0;
     box-shadow: none;
     padding: 0;
