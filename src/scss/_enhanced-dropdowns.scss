@@ -190,17 +190,6 @@
 
         // Styles for items within multi-column dropdowns
         &[class*="dropdown-menu-columns-"] {
-            // Fallback for direct A items if not wrapped in LI (though current HTML uses LI)
-            > .dropdown-item {
-                 break-inside: avoid-column;
-                 -webkit-column-break-inside: avoid;
-                 page-break-inside: avoid;
-                 display: block;
-                 width: 100%;
-                 padding-left: var(--bs-dropdown-item-padding-x, 1rem) !important;
-                 padding-right: var(--bs-dropdown-item-padding-x, 1rem) !important;
-            }
-
             > li { // Target the LI if items are wrapped in LIs
                  break-inside: avoid-column;
                  -webkit-column-break-inside: avoid; // Safari/Chrome
