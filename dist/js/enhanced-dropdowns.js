@@ -33,180 +33,139 @@ class BootstrapEnhancedDropdowns {
     this.initAutoColumns();
   }
     
+  _createDropdownInstance(toggleElement, menuElement) {
+    const dropdownInstance = new bootstrap.Dropdown(toggleElement);
+    dropdownInstance._menu = menuElement; // Manually set menu reference
+    return dropdownInstance;
+  }
+
+  _attachToggleHandlers(toggleElement, dropdownInstance, isSubmenuLinkToggle = false) {
+    toggleElement.addEventListener('click', (event) => {
+      event.stopPropagation();
+      // For submenu links that are also toggles (href="#"), prevent navigation
+      if (isSubmenuLinkToggle && toggleElement.tagName === 'A' && 
+          (toggleElement.getAttribute('href') === '#' || toggleElement.getAttribute('href') === '')) {
+        event.preventDefault();
+      }
+      dropdownInstance.toggle();
+    });
+            
+    toggleElement.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        event.stopPropagation();
+        dropdownInstance.toggle();
+      }
+    });
+  }
+
+  _attachAriaSyncHandlers(eventSourceElement, targetAttributeElement, submenuParent = null, focusTargetMenu = null) {
+    eventSourceElement.addEventListener('show.bs.dropdown', () => {
+      targetAttributeElement.setAttribute('aria-expanded', 'true');
+      if (submenuParent) {
+        submenuParent.classList.add('show');
+      }
+    });
+    
+    if (focusTargetMenu) { // Only for submenus that need focus on first item
+        eventSourceElement.addEventListener('shown.bs.dropdown', () => {
+        const firstItem = focusTargetMenu.querySelector('.dropdown-item:not(.disabled)');
+        if (firstItem) {
+          firstItem.focus();
+        }
+      });
+    }
+            
+    eventSourceElement.addEventListener('hide.bs.dropdown', () => {
+      targetAttributeElement.setAttribute('aria-expanded', 'false');
+      if (submenuParent) {
+        submenuParent.classList.remove('show');
+      }
+    });
+  }
+
+  _findAssociatedMenuForSplitButton(toggleElement, parentWrapperElement) {
+    let menuId = toggleElement.getAttribute('data-bs-target') || toggleElement.getAttribute('aria-controls');
+    let menu = null;
+    if (menuId) {
+        menu = document.getElementById(menuId.startsWith('#') ? menuId.substring(1) : menuId);
+    }
+    // Fallback for structure where menu is next sibling of the wrapper (splitButton)
+    if (!menu && parentWrapperElement) { 
+        menu = parentWrapperElement.nextElementSibling;
+        if (menu && !menu.classList.contains('dropdown-menu')) {
+            menu = null; // Ensure it's actually a dropdown menu
+        }
+    }
+    return menu;
+  }
+
   initSplitButtonDropdowns() {
-    // Find all split button wrappers
     const splitButtons = document.querySelectorAll(this.options.splitButtonSelector);
         
     splitButtons.forEach((splitButton) => {
-            
       const caretButton = splitButton.querySelector(this.options.caretSelector);
-      const linkElement = splitButton.querySelector('.nav-link:not(' + this.options.fullToggleSelector + ')');
+      const linkElement = splitButton.querySelector(`.nav-link:not(${this.options.fullToggleSelector})`);
             
-      if (!caretButton || !linkElement) {
-        return;
-      }
+      if (!caretButton || !linkElement) return;
             
-      // Get dropdown menu by id or find adjacent menu
-      let menuId = caretButton.getAttribute('data-bs-target') || 
-                          caretButton.getAttribute('aria-controls');
-      let menu;
+      const menu = this._findAssociatedMenuForSplitButton(caretButton, splitButton);
+      if (!menu) return;
             
-      if (menuId) {
-        if (menuId.startsWith('#')) {
-          menuId = menuId.substring(1);
-        }
-        menu = document.getElementById(menuId);
-      }
+      const dropdownInstance = this._createDropdownInstance(caretButton, menu);
+      this._attachToggleHandlers(caretButton, dropdownInstance);
+      this._attachAriaSyncHandlers(caretButton, caretButton); // Event source and ARIA target are the same
             
-      if (!menu) {
-        // Try to find adjacent menu as sibling of wrapper
-        menu = splitButton.nextElementSibling;
-        if (menu && !menu.classList.contains('dropdown-menu')) {
-          menu = null;
-        }
-      }
-            
-      if (!menu) {
-        return;
-      }
-            
-      // Initialize Bootstrap Dropdown
-      let dropdownInstance = new bootstrap.Dropdown(caretButton);
-            
-      // Manually set the internal menu reference 
-      // This is needed because the Bootstrap constructor may fail to find it
-      // with our custom structure
-      dropdownInstance._menu = menu;
-            
-      // Manual toggle handlers
-      caretButton.addEventListener('click', (event) => {
-        event.stopPropagation();
-        dropdownInstance.toggle();
-      });
-            
-      caretButton.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          event.stopPropagation();
-          dropdownInstance.toggle();
-        }
-      });
-            
-      // Sync ARIA attributes on Bootstrap events
-      caretButton.addEventListener('show.bs.dropdown', () => {
-        caretButton.setAttribute('aria-expanded', 'true');
-      });
-            
-      caretButton.addEventListener('hide.bs.dropdown', () => {
-        caretButton.setAttribute('aria-expanded', 'false');
-      });
-            
-      // Setup keyboard navigation within the menu
       this.setupMenuKeyboardNavigation(menu, caretButton, true);
     });
   }
     
   initSubmenuDropdowns() {
-    // Find all submenu dropdowns
     const submenuDropdowns = document.querySelectorAll(this.options.submenuSelector);
         
     submenuDropdowns.forEach((submenu) => {
-            
       const itemWrapper = submenu.querySelector('.bs-dropdown-item-wrapper');
-      let toggleElement, linkElement, menu, isSplitButton = false;
+      let toggleElement, linkElement, menuElement, isSplitButton = false;
             
-      // Determine if this is a split button or full toggle
       if (itemWrapper) {
-        // Split button
-        linkElement = itemWrapper.querySelector('.dropdown-item:not(' + this.options.fullToggleSelector + ')');
+        linkElement = itemWrapper.querySelector(`.dropdown-item:not(${this.options.fullToggleSelector})`);
         toggleElement = itemWrapper.querySelector(this.options.caretSelector);
         isSplitButton = true;
       } else {
-        // Full toggle
         toggleElement = submenu.querySelector(this.options.fullToggleSelector);
       }
             
-      if (!toggleElement) {
-        return;
+      if (!toggleElement) return;
+            
+      menuElement = submenu.querySelector('.dropdown-menu');
+      if (!menuElement) return;
+            
+      let labelledById = (isSplitButton && linkElement) ? (linkElement.id || '') : (toggleElement.id || '');
+      if (!menuElement.id && labelledById) menuElement.id = `${labelledById}-menu`;
+      if (labelledById) menuElement.setAttribute('aria-labelledby', labelledById);
+      if (menuElement.id && !toggleElement.hasAttribute('aria-controls')) {
+        toggleElement.setAttribute('aria-controls', menuElement.id);
       }
             
-      // Find the dropdown menu
-      menu = submenu.querySelector('.dropdown-menu');
-      if (!menu) {
-        return;
-      }
+      const dropdownInstance = this._createDropdownInstance(toggleElement, menuElement);
+      // Pass true if it's a full toggle link that might need event.preventDefault()
+      const isLinkToggle = !isSplitButton && toggleElement.tagName === 'A';
+      this._attachToggleHandlers(toggleElement, dropdownInstance, isLinkToggle); 
+      // For submenus, caretButton/toggleElement is event source, but also the element for aria-expanded.
+      // submenu is the parent for 'show' class. focusTargetMenu is the menu itself.
+      this._attachAriaSyncHandlers(toggleElement, toggleElement, submenu, menuElement);
             
-      // Ensure menu has ID and proper aria attributes
-      let labelledById = '';
-      if (isSplitButton && linkElement) {
-        labelledById = linkElement.id || '';
-      } else if (toggleElement) {
-        labelledById = toggleElement.id || '';
-      }
-            
-      if (!menu.id && labelledById) {
-        menu.id = labelledById + '-menu';
-      }
-            
-      if (labelledById) {
-        menu.setAttribute('aria-labelledby', labelledById);
-      }
-            
-      if (toggleElement) {
-        if (menu.id && !toggleElement.hasAttribute('aria-controls')) {
-          toggleElement.setAttribute('aria-controls', menu.id);
-        }
-      }
-            
-      // Initialize Bootstrap Dropdown
-      let bsDropdownInstance = new bootstrap.Dropdown(toggleElement);
-            
-      // Manually set menu reference
-      bsDropdownInstance._menu = menu;
-            
-      // Click handler for toggle
-      toggleElement.addEventListener('click', (event) => {
-        event.stopPropagation(); // Prevent parent dropdowns from closing
-                
-        // For splits, let link elements navigate
-        if (toggleElement.tagName === 'A' && 
-                    (toggleElement.getAttribute('href') === '#' || toggleElement.getAttribute('href') === '')) {
-          event.preventDefault();
-        }
-                
-        bsDropdownInstance.toggle();
-      });
-            
-      // Keyboard handler
-      toggleElement.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          event.stopPropagation();
-          bsDropdownInstance.toggle();
-        }
-      });
-            
-      // ARIA sync
-      toggleElement.addEventListener('show.bs.dropdown', () => {
-        toggleElement.setAttribute('aria-expanded', 'true');
-        submenu.classList.add('show'); // Add show class to submenu parent
-      });
-            
-      toggleElement.addEventListener('shown.bs.dropdown', () => {
-        const firstItem = menu.querySelector('.dropdown-item:not(.disabled)');
-        if (firstItem) {
-          firstItem.focus();
-        }
-      });
-            
-      toggleElement.addEventListener('hide.bs.dropdown', () => {
-        toggleElement.setAttribute('aria-expanded', 'false');
-        submenu.classList.remove('show'); // Remove show class from submenu parent
-      });
-            
-      // Setup keyboard navigation
-      this.setupMenuKeyboardNavigation(menu, toggleElement, isSplitButton);
+      this.setupMenuKeyboardNavigation(menuElement, toggleElement, isSplitButton);
     });
+  }
+    
+  _closeDropdown(toggleElement) {
+    // Helper to reliably close a Bootstrap dropdown instance
+    if (!toggleElement) return;
+    const instance = bootstrap.Dropdown.getInstance(toggleElement);
+    if (instance) {
+      instance.hide();
+    }
   }
     
   setupMenuKeyboardNavigation(menu, toggleElement, isSplitButton) {
@@ -226,33 +185,23 @@ class BootstrapEnhancedDropdowns {
           (currentIndex - 1 + items.length) % items.length : items.length - 1;
         items[prevIndex].focus();
         handled = true;
-      } else if (event.key === 'Escape' || 
-                      (!isSplitButton && event.key === 'ArrowLeft') || 
-                      (isSplitButton && event.key === 'ArrowLeft' && document.activeElement === items[0])) {
-        // Close on Escape, or ArrowLeft with conditions
-        if (toggleElement && 'hide' in toggleElement) {
-          toggleElement.hide();
-        } else if (toggleElement && toggleElement._element) {
-          bootstrap.Dropdown.getInstance(toggleElement._element).hide();
-        } else if (toggleElement) {
-          bootstrap.Dropdown.getInstance(toggleElement).hide();
-        }
-        toggleElement.focus();
+      } else if (
+        event.key === 'Escape' || 
+        (!isSplitButton && event.key === 'ArrowLeft') || 
+        (isSplitButton && event.key === 'ArrowLeft' && document.activeElement === items[0])
+      ) {
+        this._closeDropdown(toggleElement); 
+        if (toggleElement) toggleElement.focus();
         handled = true;
       } else if (event.key === 'Tab') {
-        // Let Tab navigate naturally but close if we're at boundaries
-        if ((currentIndex === items.length - 1 && !event.shiftKey) || 
-                    (currentIndex === 0 && event.shiftKey)) {
-          // Let browser handle the Tab, but close the dropdown
-          setTimeout(() => {
-            if (toggleElement && 'hide' in toggleElement) {
-              toggleElement.hide();
-            } else if (toggleElement && toggleElement._element) {
-              bootstrap.Dropdown.getInstance(toggleElement._element).hide();
-            } else if (toggleElement) {
-              bootstrap.Dropdown.getInstance(toggleElement).hide();
-            }
+        if (
+          (currentIndex === items.length - 1 && !event.shiftKey) || 
+          (currentIndex === 0 && event.shiftKey)
+        ) {
+          setTimeout(() => { // Timeout to allow tab to propagate first
+            this._closeDropdown(toggleElement);
           }, 0);
+          // Not setting handled = true, as Tab should proceed
         }
       }
             
