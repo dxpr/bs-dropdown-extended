@@ -35,9 +35,8 @@ export default [
       'venv/',
       'coverage/',
       '*.html',
-      'css/',
       '*.py',
-      // 'js/test-lint.js', // Temporarily ignore for testing other setup parts if needed
+      // 'src/js/test-lint.js', // Temporarily ignore for testing other setup parts if needed
     ],
   }
 ]; 
