@@ -33,7 +33,8 @@
 }
 
 /* Caret button part of a split button */
-.bs-dropdown-caret {
+.bs-dropdown-wrapper .bs-dropdown-caret,
+.dropdown-menu .bs-dropdown-caret {
     flex-shrink: 0;
     width: var(--bs-dropdown-caret-width);
     padding-left: var(--bs-dropdown-caret-padding-x);
@@ -47,6 +48,8 @@
     align-items: center;
     justify-content: center;
     position: relative; /* For caret positioning */
+    font-size: inherit;
+    line-height: inherit;
 }
 
 .bs-dropdown-caret::after {
@@ -112,6 +115,7 @@
 /* Visible submenu */
 .bs-dropdown-submenu.show > .dropdown-menu {
     display: block;
+    position: absolute;
 }
 
 /* Indentation for menu levels */
