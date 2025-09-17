@@ -34,22 +34,31 @@ class BootstrapEnhancedDropdowns {
   }
     
   _createDropdownInstance(toggleElement, menuElement) {
+    // Ensure the toggle element has the Bootstrap dropdown attributes
+    if (!toggleElement.hasAttribute('data-bs-toggle')) {
+      toggleElement.setAttribute('data-bs-toggle', 'dropdown');
+    }
+
     const dropdownInstance = new bootstrap.Dropdown(toggleElement);
     dropdownInstance._menu = menuElement; // Manually set menu reference
     return dropdownInstance;
   }
 
   _attachToggleHandlers(toggleElement, dropdownInstance, isSubmenuLinkToggle = false) {
-    toggleElement.addEventListener('click', (event) => {
-      event.stopPropagation();
-      // For submenu links that are also toggles (href="#"), prevent navigation
-      if (isSubmenuLinkToggle && toggleElement.tagName === 'A' && 
-          (toggleElement.getAttribute('href') === '#' || toggleElement.getAttribute('href') === '')) {
-        event.preventDefault();
-      }
-      dropdownInstance.toggle();
-    });
-            
+    if (isSubmenuLinkToggle) {
+      // For submenu toggles, we need manual click handling since Bootstrap doesn't handle nested dropdowns
+      toggleElement.addEventListener('click', (event) => {
+        event.stopPropagation();
+        // For submenu links that are also toggles (href="#"), prevent navigation
+        if (toggleElement.tagName === 'A' &&
+            (toggleElement.getAttribute('href') === '#' || toggleElement.getAttribute('href') === '')) {
+          event.preventDefault();
+        }
+        dropdownInstance.toggle();
+      });
+    }
+
+    // Add keyboard handling for Enter/Space since Bootstrap doesn't handle these by default
     toggleElement.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
@@ -172,30 +181,29 @@ class BootstrapEnhancedDropdowns {
     menu.addEventListener('keydown', (event) => {
       const items = Array.from(menu.querySelectorAll('.dropdown-item:not(.disabled)'));
       if (items.length === 0) return;
-            
+
       const currentIndex = items.indexOf(document.activeElement);
       let handled = false;
-            
+
       if (event.key === 'ArrowDown') {
         const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % items.length : 0;
         items[nextIndex].focus();
         handled = true;
       } else if (event.key === 'ArrowUp') {
-        const prevIndex = currentIndex >= 0 ? 
+        const prevIndex = currentIndex >= 0 ?
           (currentIndex - 1 + items.length) % items.length : items.length - 1;
         items[prevIndex].focus();
         handled = true;
       } else if (
-        event.key === 'Escape' || 
-        (!isSplitButton && event.key === 'ArrowLeft') || 
+        (!isSplitButton && event.key === 'ArrowLeft') ||
         (isSplitButton && event.key === 'ArrowLeft' && document.activeElement === items[0])
       ) {
-        this._closeDropdown(toggleElement); 
+        this._closeDropdown(toggleElement);
         if (toggleElement) toggleElement.focus();
         handled = true;
       } else if (event.key === 'Tab') {
         if (
-          (currentIndex === items.length - 1 && !event.shiftKey) || 
+          (currentIndex === items.length - 1 && !event.shiftKey) ||
           (currentIndex === 0 && event.shiftKey)
         ) {
           setTimeout(() => { // Timeout to allow tab to propagate first
@@ -204,7 +212,8 @@ class BootstrapEnhancedDropdowns {
           // Not setting handled = true, as Tab should proceed
         }
       }
-            
+      // Note: Removed manual Escape handling - Bootstrap will handle this automatically
+
       if (handled) {
         event.preventDefault();
         event.stopPropagation();
