@@ -45,36 +45,37 @@ class BootstrapEnhancedDropdowns {
     return dropdownInstance;
   }
 
-  _attachToggleHandlers(toggleElement, dropdownInstance, isSubmenu = false) {
-    if (isSubmenu) {
-      // For all submenu toggles, we need manual click handling since Bootstrap doesn't handle nested dropdowns
-      toggleElement.addEventListener('click', (event) => {
+  _attachKeyboardHandler(toggleElement, dropdownInstance) {
+    // Shared keyboard handler for Enter/Space keys
+    toggleElement.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
         event.stopPropagation();
-        // For submenu links that are also toggles (href="#"), prevent navigation
-        if (toggleElement.tagName === 'A' &&
-            (toggleElement.getAttribute('href') === '#' || toggleElement.getAttribute('href') === '')) {
-          event.preventDefault();
-        }
         dropdownInstance.toggle();
-      });
+      }
+    });
+  }
 
-      // Add keyboard handling for submenus since Bootstrap won't handle these
-      toggleElement.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          event.stopPropagation();
-          dropdownInstance.toggle();
-        }
-      });
-    } else {
-      // For top-level dropdowns, only add keyboard support for Enter/Space (Bootstrap handles click)
-      toggleElement.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          event.stopPropagation();
-          dropdownInstance.toggle();
-        }
-      });
+  _attachClickHandler(toggleElement, dropdownInstance) {
+    // Manual click handler for submenu toggles
+    toggleElement.addEventListener('click', (event) => {
+      event.stopPropagation();
+      // For submenu links that are also toggles (href="#"), prevent navigation
+      if (toggleElement.tagName === 'A' &&
+          (toggleElement.getAttribute('href') === '#' || toggleElement.getAttribute('href') === '')) {
+        event.preventDefault();
+      }
+      dropdownInstance.toggle();
+    });
+  }
+
+  _attachToggleHandlers(toggleElement, dropdownInstance, isSubmenu = false) {
+    // Always add keyboard support
+    this._attachKeyboardHandler(toggleElement, dropdownInstance);
+
+    // Add click handler only for submenus (top-level uses Bootstrap's native handling)
+    if (isSubmenu) {
+      this._attachClickHandler(toggleElement, dropdownInstance);
     }
   }
 
@@ -119,33 +120,48 @@ class BootstrapEnhancedDropdowns {
     return menu;
   }
 
+  _setupDropdownCommon(toggleElement, menuElement, isSubmenu, ariaTarget, submenuParent = null) {
+    // Common dropdown setup logic
+    const dropdownInstance = this._createDropdownInstance(toggleElement, menuElement, isSubmenu);
+    this._attachToggleHandlers(toggleElement, dropdownInstance, isSubmenu);
+    this._attachAriaSyncHandlers(toggleElement, ariaTarget, submenuParent, isSubmenu ? menuElement : null);
+    this.setupMenuKeyboardNavigation(menuElement, toggleElement, submenuParent !== null);
+    return dropdownInstance;
+  }
+
   initSplitButtonDropdowns() {
     const splitButtons = document.querySelectorAll(this.options.splitButtonSelector);
-        
+
     splitButtons.forEach((splitButton) => {
       const caretButton = splitButton.querySelector(this.options.caretSelector);
       const linkElement = splitButton.querySelector(`.nav-link:not(${this.options.fullToggleSelector})`);
-            
+
       if (!caretButton || !linkElement) return;
-            
+
       const menu = this._findAssociatedMenuForSplitButton(caretButton, splitButton);
       if (!menu) return;
-            
-      const dropdownInstance = this._createDropdownInstance(caretButton, menu, false); // Top-level dropdown
-      this._attachToggleHandlers(caretButton, dropdownInstance, false); // Not a submenu
-      this._attachAriaSyncHandlers(caretButton, caretButton); // Event source and ARIA target are the same
-            
-      this.setupMenuKeyboardNavigation(menu, caretButton, true);
+
+      this._setupDropdownCommon(caretButton, menu, false, caretButton);
     });
   }
     
+  _setupSubmenuAria(toggleElement, menuElement, linkElement, isSplitButton) {
+    // Setup ARIA attributes for submenu
+    const labelledById = (isSplitButton && linkElement) ? (linkElement.id || '') : (toggleElement.id || '');
+    if (!menuElement.id && labelledById) menuElement.id = `${labelledById}-menu`;
+    if (labelledById) menuElement.setAttribute('aria-labelledby', labelledById);
+    if (menuElement.id && !toggleElement.hasAttribute('aria-controls')) {
+      toggleElement.setAttribute('aria-controls', menuElement.id);
+    }
+  }
+
   initSubmenuDropdowns() {
     const submenuDropdowns = document.querySelectorAll(this.options.submenuSelector);
-        
+
     submenuDropdowns.forEach((submenu) => {
       const itemWrapper = submenu.querySelector('.bs-dropdown-item-wrapper');
-      let toggleElement, linkElement, menuElement, isSplitButton = false;
-            
+      let toggleElement, linkElement, isSplitButton = false;
+
       if (itemWrapper) {
         linkElement = itemWrapper.querySelector(`.dropdown-item:not(${this.options.fullToggleSelector})`);
         toggleElement = itemWrapper.querySelector(this.options.caretSelector);
@@ -153,26 +169,14 @@ class BootstrapEnhancedDropdowns {
       } else {
         toggleElement = submenu.querySelector(this.options.fullToggleSelector);
       }
-            
+
       if (!toggleElement) return;
-            
-      menuElement = submenu.querySelector('.dropdown-menu');
+
+      const menuElement = submenu.querySelector('.dropdown-menu');
       if (!menuElement) return;
-            
-      let labelledById = (isSplitButton && linkElement) ? (linkElement.id || '') : (toggleElement.id || '');
-      if (!menuElement.id && labelledById) menuElement.id = `${labelledById}-menu`;
-      if (labelledById) menuElement.setAttribute('aria-labelledby', labelledById);
-      if (menuElement.id && !toggleElement.hasAttribute('aria-controls')) {
-        toggleElement.setAttribute('aria-controls', menuElement.id);
-      }
-            
-      const dropdownInstance = this._createDropdownInstance(toggleElement, menuElement, true); // This is a submenu
-      this._attachToggleHandlers(toggleElement, dropdownInstance, true); // This is a submenu 
-      // For submenus, caretButton/toggleElement is event source, but also the element for aria-expanded.
-      // submenu is the parent for 'show' class. focusTargetMenu is the menu itself.
-      this._attachAriaSyncHandlers(toggleElement, toggleElement, submenu, menuElement);
-            
-      this.setupMenuKeyboardNavigation(menuElement, toggleElement, isSplitButton);
+
+      this._setupSubmenuAria(toggleElement, menuElement, linkElement, isSplitButton);
+      this._setupDropdownCommon(toggleElement, menuElement, true, toggleElement, submenu);
     });
   }
     
@@ -229,53 +233,50 @@ class BootstrapEnhancedDropdowns {
     });
   }
 
+  _calculateColumns(itemCount) {
+    // Calculate number of columns based on item count
+    if (itemCount >= 28) return 5;
+    if (itemCount >= 21) return 4;
+    if (itemCount >= 15) return 3;
+    if (itemCount >= 8) return 2;
+    return 1;
+  }
+
+  _cleanupColumnClasses(menu, parentLi) {
+    // Remove existing column classes
+    for (let i = 1; i <= 5; i++) {
+      menu.classList.remove(`dropdown-menu-columns-${i}`);
+    }
+    if (parentLi) {
+      parentLi.classList.remove('dropdown-full-width');
+    }
+  }
+
+  _applyColumnClasses(menu, parentLi, numColumns) {
+    // Apply new column classes
+    if (numColumns > 1) {
+      menu.classList.add(`dropdown-menu-columns-${numColumns}`);
+    }
+    if (numColumns >= 3 && parentLi) {
+      parentLi.classList.add('dropdown-full-width');
+    }
+  }
+
   initAutoColumns() {
-    const topLevelMenus = document.querySelectorAll(
-      // Selects dropdown-menu that is a direct child of nav-item.dropdown,
-      // which itself is a direct child of .navbar-nav (top level)
-      '.navbar-nav > .nav-item.dropdown > .dropdown-menu'
-    );
+    const topLevelMenus = document.querySelectorAll('.navbar-nav > .nav-item.dropdown > .dropdown-menu');
 
     topLevelMenus.forEach(menu => {
-      // Ensure this menu is not part of a .bs-dropdown-submenu (nested menu)
-      if (menu.closest('.bs-dropdown-submenu')) {
-        return;
-      }
+      if (menu.closest('.bs-dropdown-submenu')) return;
 
       const items = Array.from(menu.children).filter(child => child.tagName === 'LI');
       const itemCount = items.length;
-      let numColumns = 1;
-
-      if (itemCount >= 28) { // 28+ items
-        numColumns = 5;
-      } else if (itemCount >= 21) { // 21-27 items
-        numColumns = 4;
-      } else if (itemCount >= 15) { // 15-20 items
-        numColumns = 3;
-      } else if (itemCount >= 8) {  // 8-14 items
-        numColumns = 2;
-      }
-      // else numColumns remains 1 for 1-7 items
-
-      // Clean up previous column classes
-      for (let i = 1; i <= 5; i++) {
-        menu.classList.remove(`dropdown-menu-columns-${i}`);
-      }
-      
+      const numColumns = this._calculateColumns(itemCount);
       const parentLi = menu.closest('.nav-item.dropdown');
-      if (parentLi) {
-        parentLi.classList.remove('dropdown-full-width');
-      }
+
+      this._cleanupColumnClasses(menu, parentLi);
 
       if (itemCount > 0) {
-        if (numColumns > 1) { // Only add column class if more than 1 column
-          menu.classList.add(`dropdown-menu-columns-${numColumns}`);
-        }
-        // If numColumns is 1, no specific column class is added, it behaves as default.
-
-        if (numColumns >= 3 && parentLi) {
-          parentLi.classList.add('dropdown-full-width');
-        }
+        this._applyColumnClasses(menu, parentLi, numColumns);
       }
     });
   }
