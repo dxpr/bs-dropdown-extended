@@ -34,7 +34,13 @@
 
 /* Caret button part of a split button */
 .bs-dropdown-wrapper .bs-dropdown-caret,
-.dropdown-menu .bs-dropdown-caret {
+.dropdown-menu .bs-dropdown-caret,
+.bs-dropdown-wrapper .bs-dropdown-caret:active,
+.bs-dropdown-wrapper .bs-dropdown-caret:focus,
+.bs-dropdown-wrapper .bs-dropdown-caret:hover,
+.dropdown-menu .bs-dropdown-caret:active,
+.dropdown-menu .bs-dropdown-caret:focus,
+.dropdown-menu .bs-dropdown-caret:hover {
     flex-shrink: 0;
     width: var(--bs-dropdown-caret-width);
     padding-left: var(--bs-dropdown-caret-padding-x);
@@ -120,7 +126,8 @@
 
 /* Indentation for menu levels */
 .navbar-nav .dropdown-menu .dropdown-item {
-    padding-left: var(--bs-dropdown-item-padding-x, 1rem);
+    padding-top: .75rem;
+    padding-bottom: .75rem;
 }
 
 .bs-dropdown-submenu > .dropdown-menu .dropdown-item {
