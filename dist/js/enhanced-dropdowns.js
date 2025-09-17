@@ -33,9 +33,10 @@ class BootstrapEnhancedDropdowns {
     this.initAutoColumns();
   }
     
-  _createDropdownInstance(toggleElement, menuElement) {
-    // Ensure the toggle element has the Bootstrap dropdown attributes
-    if (!toggleElement.hasAttribute('data-bs-toggle')) {
+  _createDropdownInstance(toggleElement, menuElement, isSubmenu = false) {
+    // Only add Bootstrap attributes for top-level dropdowns
+    // Submenus need manual handling since Bootstrap doesn't support nested dropdowns
+    if (!isSubmenu && !toggleElement.hasAttribute('data-bs-toggle')) {
       toggleElement.setAttribute('data-bs-toggle', 'dropdown');
     }
 
@@ -44,9 +45,9 @@ class BootstrapEnhancedDropdowns {
     return dropdownInstance;
   }
 
-  _attachToggleHandlers(toggleElement, dropdownInstance, isSubmenuLinkToggle = false) {
-    if (isSubmenuLinkToggle) {
-      // For submenu toggles, we need manual click handling since Bootstrap doesn't handle nested dropdowns
+  _attachToggleHandlers(toggleElement, dropdownInstance, isSubmenu = false) {
+    if (isSubmenu) {
+      // For all submenu toggles, we need manual click handling since Bootstrap doesn't handle nested dropdowns
       toggleElement.addEventListener('click', (event) => {
         event.stopPropagation();
         // For submenu links that are also toggles (href="#"), prevent navigation
@@ -56,16 +57,25 @@ class BootstrapEnhancedDropdowns {
         }
         dropdownInstance.toggle();
       });
-    }
 
-    // Add keyboard handling for Enter/Space since Bootstrap doesn't handle these by default
-    toggleElement.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        event.stopPropagation();
-        dropdownInstance.toggle();
-      }
-    });
+      // Add keyboard handling for submenus since Bootstrap won't handle these
+      toggleElement.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          event.stopPropagation();
+          dropdownInstance.toggle();
+        }
+      });
+    } else {
+      // For top-level dropdowns, only add keyboard support for Enter/Space (Bootstrap handles click)
+      toggleElement.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          event.stopPropagation();
+          dropdownInstance.toggle();
+        }
+      });
+    }
   }
 
   _attachAriaSyncHandlers(eventSourceElement, targetAttributeElement, submenuParent = null, focusTargetMenu = null) {
@@ -121,8 +131,8 @@ class BootstrapEnhancedDropdowns {
       const menu = this._findAssociatedMenuForSplitButton(caretButton, splitButton);
       if (!menu) return;
             
-      const dropdownInstance = this._createDropdownInstance(caretButton, menu);
-      this._attachToggleHandlers(caretButton, dropdownInstance);
+      const dropdownInstance = this._createDropdownInstance(caretButton, menu, false); // Top-level dropdown
+      this._attachToggleHandlers(caretButton, dropdownInstance, false); // Not a submenu
       this._attachAriaSyncHandlers(caretButton, caretButton); // Event source and ARIA target are the same
             
       this.setupMenuKeyboardNavigation(menu, caretButton, true);
@@ -156,10 +166,8 @@ class BootstrapEnhancedDropdowns {
         toggleElement.setAttribute('aria-controls', menuElement.id);
       }
             
-      const dropdownInstance = this._createDropdownInstance(toggleElement, menuElement);
-      // Pass true if it's a full toggle link that might need event.preventDefault()
-      const isLinkToggle = !isSplitButton && toggleElement.tagName === 'A';
-      this._attachToggleHandlers(toggleElement, dropdownInstance, isLinkToggle); 
+      const dropdownInstance = this._createDropdownInstance(toggleElement, menuElement, true); // This is a submenu
+      this._attachToggleHandlers(toggleElement, dropdownInstance, true); // This is a submenu 
       // For submenus, caretButton/toggleElement is event source, but also the element for aria-expanded.
       // submenu is the parent for 'show' class. focusTargetMenu is the menu itself.
       this._attachAriaSyncHandlers(toggleElement, toggleElement, submenu, menuElement);
