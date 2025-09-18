@@ -50,8 +50,9 @@
             /* padding: 0.5rem 1rem; */ /* Base padding is handled by BS and plugin */
             /* border-radius is now 0 globally */
             transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
-            display: flex; 
+            display: flex;
             align-items: center;
+        }
 
         .navbar-toggler {
             border-color: var(--bs-border-color-translucent, rgba(0,0,0,0.1));
@@ -101,7 +102,7 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-lg fixed-top">
-        <div class="container">
+        <div class="container-fluid">
             <a class="navbar-brand" href="#">Brand</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation menu">
                 <span class="navbar-toggler-icon"></span>
@@ -158,19 +159,6 @@
                         </ul>
                     </li>
                     <li class="nav-item dropdown" role="none">
-                        <!-- FULL TOGGLE: About (href="#") -->
-                        <a class="nav-link dropdown-toggle" href="#" id="aboutDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            About
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
-                            <li><a class="dropdown-item" href="#about" role="menuitem">About Overview</a></li>
-                            <li><a class="dropdown-item" href="#about-story" role="menuitem">Our Story</a></li>
-                            <li><a class="dropdown-item" href="#about-team" role="menuitem">Team</a></li>
-                            <li><a class="dropdown-item" href="#about-careers" role="menuitem">Careeeeeeeeeeeeeeeeeeeeeeers</a></li>
-                            <li><a class="dropdown-item" href="#about-press" role="menuitem">Press</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown" role="none">
                         <a class="nav-link dropdown-toggle" href="#" id="dropdown7" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Dropdown 7
                         </a>
@@ -185,15 +173,53 @@
                         </ul>
                     </li>
                     <li class="nav-item dropdown" role="none">
-                        <a class="nav-link dropdown-toggle" href="#" id="dropdown14" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Dropdown 14
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="dropdown14">
+                        <!-- SPLIT BUTTON: Dropdown 14 -->
+                        <div class="bs-dropdown-wrapper">
+                            <a class="nav-link" href="#dropdown14" id="dropdown14" role="menuitem">
+                                Dropdown 14 (2 Col)
+                            </a>
+                            <button class="bs-dropdown-caret" type="button" id="dropdown14CaretToggler"
+                                    aria-expanded="false" aria-controls="dropdown14Menu"
+                                    aria-labelledby="dropdown14">
+                                <span class="visually-hidden">Toggle Dropdown 14 submenu</span>
+                            </button>
+                        </div>
+                        <ul class="dropdown-menu" id="dropdown14Menu" aria-labelledby="dropdown14">
                             <li><a class="dropdown-item" href="#dropdown14-item1" role="menuitem">Dropdown 14 - Item 1</a></li>
                             <li><a class="dropdown-item" href="#dropdown14-item2" role="menuitem">Dropdown 14 - Item 2</a></li>
+                            <li class="bs-dropdown-submenu" role="none">
+                                <!-- SPLIT BUTTON: Category A -->
+                                <div class="bs-dropdown-item-wrapper">
+                                    <a class="dropdown-item" href="#dropdown14-category-a" id="dropdown14CategoryA" role="menuitem">
+                                        Category A
+                                    </a>
+                                    <button class="bs-dropdown-caret" type="button" aria-expanded="false"
+                                            aria-labelledby="dropdown14CategoryA" aria-controls="dropdown14CategoryAMenu">
+                                        <span class="visually-hidden">Toggle Category A submenu</span>
+                                    </button>
+                                </div>
+                                <ul class="dropdown-menu" id="dropdown14CategoryAMenu" aria-labelledby="dropdown14CategoryA">
+                                    <li><a class="dropdown-item" href="#dropdown14-category-a" role="menuitem">Category A Overview</a></li>
+                                    <li><a class="dropdown-item" href="#dropdown14-subcategory-1" role="menuitem">Subcategory 1</a></li>
+                                    <li><a class="dropdown-item" href="#dropdown14-subcategory-2" role="menuitem">Subcategory 2</a></li>
+                                    <li><a class="dropdown-item" href="#dropdown14-subcategory-3" role="menuitem">Subcategory 3</a></li>
+                                </ul>
+                            </li>
                             <li><a class="dropdown-item" href="#dropdown14-item3" role="menuitem">Dropdown 14 - Item 3</a></li>
                             <li><a class="dropdown-item" href="#dropdown14-item4" role="menuitem">Dropdown 14 - Item 4</a></li>
                             <li><a class="dropdown-item" href="#dropdown14-item5" role="menuitem">Dropdown 14 - Item 5</a></li>
+                            <li class="bs-dropdown-submenu" role="none">
+                                <!-- FULL TOGGLE: Category B (href="#") -->
+                                <a class="dropdown-item dropdown-toggle" href="#" id="dropdown14CategoryB" role="button" aria-expanded="false" aria-controls="dropdown14CategoryBMenu">
+                                    Category B
+                                </a>
+                                <ul class="dropdown-menu" id="dropdown14CategoryBMenu" aria-labelledby="dropdown14CategoryB">
+                                    <li><a class="dropdown-item" href="#dropdown14-option-1" role="menuitem">Option 1</a></li>
+                                    <li><a class="dropdown-item" href="#dropdown14-option-2" role="menuitem">Option 2</a></li>
+                                    <li><a class="dropdown-item" href="#dropdown14-option-3" role="menuitem">Option 3</a></li>
+                                    <li><a class="dropdown-item" href="#dropdown14-option-4" role="menuitem">Option 4</a></li>
+                                </ul>
+                            </li>
                             <li><a class="dropdown-item" href="#dropdown14-item6" role="menuitem">Dropdown 14 - Item 6</a></li>
                             <li><a class="dropdown-item" href="#dropdown14-item7" role="menuitem">Dropdown 14 - Item 7</a></li>
                             <li><a class="dropdown-item" href="#dropdown14-item8" role="menuitem">Dropdown 14 - Item 8</a></li>
@@ -207,7 +233,7 @@
                     </li>
                     <li class="nav-item dropdown" role="none">
                         <a class="nav-link dropdown-toggle" href="#" id="dropdown20" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Dropdown 20
+                            Dropdown 20 (3 Col)
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="dropdown20">
                             <li><a class="dropdown-item" href="#dropdown20-item1" role="menuitem">Dropdown 20 - Item 1</a></li>
@@ -261,13 +287,40 @@
                         </ul>
                     </li>
                     <li class="nav-item dropdown" role="none">
-                        <a class="nav-link dropdown-toggle" href="#" id="dropdown28" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Dropdown 28 (5 Col)
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="dropdown28">
+                        <!-- SPLIT BUTTON: Dropdown 28 -->
+                        <div class="bs-dropdown-wrapper">
+                            <a class="nav-link" href="#dropdown28" id="dropdown28" role="menuitem">
+                                Dropdown 28 (5 Col)
+                            </a>
+                            <button class="bs-dropdown-caret" type="button" id="dropdown28CaretToggler"
+                                    aria-expanded="false" aria-controls="dropdown28Menu"
+                                    aria-labelledby="dropdown28">
+                                <span class="visually-hidden">Toggle Dropdown 28 submenu</span>
+                            </button>
+                        </div>
+                        <ul class="dropdown-menu" id="dropdown28Menu" aria-labelledby="dropdown28">
                             <li><a class="dropdown-item" href="#dropdown28-item1" role="menuitem">Dropdown 28 - Item 1</a></li>
                             <li><a class="dropdown-item" href="#dropdown28-item2" role="menuitem">Dropdown 28 - Item 2</a></li>
                             <li><a class="dropdown-item" href="#dropdown28-item3" role="menuitem">Dropdown 28 - Item 3</a></li>
+                            <li class="bs-dropdown-submenu" role="none">
+                                <!-- SPLIT BUTTON: Advanced Options -->
+                                <div class="bs-dropdown-item-wrapper">
+                                    <a class="dropdown-item" href="#dropdown28-advanced" id="dropdown28Advanced" role="menuitem">
+                                        Advanced Options
+                                    </a>
+                                    <button class="bs-dropdown-caret" type="button" aria-expanded="false"
+                                            aria-labelledby="dropdown28Advanced" aria-controls="dropdown28AdvancedMenu">
+                                        <span class="visually-hidden">Toggle Advanced Options submenu</span>
+                                    </button>
+                                </div>
+                                <ul class="dropdown-menu" id="dropdown28AdvancedMenu" aria-labelledby="dropdown28Advanced">
+                                    <li><a class="dropdown-item" href="#dropdown28-advanced" role="menuitem">Advanced Overview</a></li>
+                                    <li><a class="dropdown-item" href="#dropdown28-settings" role="menuitem">Settings</a></li>
+                                    <li><a class="dropdown-item" href="#dropdown28-configuration" role="menuitem">Configuration</a></li>
+                                    <li><a class="dropdown-item" href="#dropdown28-optimization" role="menuitem">Optimization</a></li>
+                                    <li><a class="dropdown-item" href="#dropdown28-debugging" role="menuitem">Debugging</a></li>
+                                </ul>
+                            </li>
                             <li><a class="dropdown-item" href="#dropdown28-item4" role="menuitem">Dropdown 28 - Item 4</a></li>
                             <li><a class="dropdown-item" href="#dropdown28-item5" role="menuitem">Dropdown 28 - Item 5</a></li>
                             <li><a class="dropdown-item" href="#dropdown28-item6" role="menuitem">Dropdown 28 - Item 6</a></li>
@@ -277,6 +330,20 @@
                             <li><a class="dropdown-item" href="#dropdown28-item10" role="menuitem">Dropdown 28 - Item 10</a></li>
                             <li><a class="dropdown-item" href="#dropdown28-item11" role="menuitem">Dropdown 28 - Item 11</a></li>
                             <li><a class="dropdown-item" href="#dropdown28-item12" role="menuitem">Dropdown 28 - Item 12</a></li>
+                            <li class="bs-dropdown-submenu" role="none">
+                                <!-- FULL TOGGLE: Tools & Resources (href="#") -->
+                                <a class="dropdown-item dropdown-toggle" href="#" id="dropdown28Tools" role="button" aria-expanded="false" aria-controls="dropdown28ToolsMenu">
+                                    Tools & Resources
+                                </a>
+                                <ul class="dropdown-menu" id="dropdown28ToolsMenu" aria-labelledby="dropdown28Tools">
+                                    <li><a class="dropdown-item" href="#dropdown28-documentation" role="menuitem">Documentation</a></li>
+                                    <li><a class="dropdown-item" href="#dropdown28-api-reference" role="menuitem">API Reference</a></li>
+                                    <li><a class="dropdown-item" href="#dropdown28-tutorials" role="menuitem">Tutorials</a></li>
+                                    <li><a class="dropdown-item" href="#dropdown28-examples" role="menuitem">Examples</a></li>
+                                    <li><a class="dropdown-item" href="#dropdown28-community" role="menuitem">Community</a></li>
+                                    <li><a class="dropdown-item" href="#dropdown28-support" role="menuitem">Support</a></li>
+                                </ul>
+                            </li>
                             <li><a class="dropdown-item" href="#dropdown28-item13" role="menuitem">Dropdown 28 - Item 13</a></li>
                             <li><a class="dropdown-item" href="#dropdown28-item14" role="menuitem">Dropdown 28 - Item 14</a></li>
                             <li><a class="dropdown-item" href="#dropdown28-item15" role="menuitem">Dropdown 28 - Item 15</a></li>
