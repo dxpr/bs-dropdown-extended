@@ -46,6 +46,7 @@ class BootstrapEnhancedDropdowns {
     }
 
     // Regular dropdowns get edge detection via Popper modifiers
+    // Only flip horizontally (left/right), not vertically (up/down)
     const config = {
       popperConfig: {
         modifiers: [
@@ -53,7 +54,8 @@ class BootstrapEnhancedDropdowns {
             name: 'flip',
             enabled: true,
             options: {
-              fallbackPlacements: ['bottom-end', 'bottom-start', 'top-end', 'top-start'],
+              fallbackPlacements: ['bottom-end', 'bottom-start'],
+              allowedAutoPlacements: ['bottom-start', 'bottom-end']
             }
           },
           {
