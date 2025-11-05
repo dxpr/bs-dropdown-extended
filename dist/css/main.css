@@ -122,10 +122,14 @@
   margin: 0;
 }
 
-/* Visible submenu */
+/* Visible submenu - use absolute positioning on desktop only */
 .bs-dropdown-submenu.show > .dropdown-menu {
   display: block;
-  position: absolute;
+}
+@media (width > 991.98px) {
+  .bs-dropdown-submenu.show > .dropdown-menu {
+    position: absolute;
+  }
 }
 
 /* Indentation for menu levels */

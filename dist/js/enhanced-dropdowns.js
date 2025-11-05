@@ -40,6 +40,11 @@ class BootstrapEnhancedDropdowns {
   }
 
   _getPopperConfig(toggleElement, referenceElement = null) {
+    // Mobile: disable Popper entirely (let CSS handle positioning)
+    if (window.innerWidth <= 991.98) {
+      return { popperConfig: null };
+    }
+
     // Full-width dropdowns don't use Popper (they use CSS position: static)
     if (this._isFullWidthDropdown(toggleElement)) {
       return { popperConfig: null };
