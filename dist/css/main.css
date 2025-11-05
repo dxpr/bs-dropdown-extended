@@ -97,8 +97,13 @@
 
 /* Dropdown Menu Base */
 .dropdown-menu {
-  max-height: calc(100vh - 100px); /* Limit dropdown height to prevent viewport overflow */
-  overflow-y: auto; /* Enable scrolling within long dropdowns */
+  /* Desktop: Limit dropdown height to prevent viewport overflow */
+}
+@media (width > 991.98px) {
+  .dropdown-menu {
+    max-height: calc(100vh - 10px);
+    overflow-y: auto;
+  }
 }
 
 /* Submenu (Level 2+) Styling */
