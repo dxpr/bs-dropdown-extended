@@ -367,6 +367,7 @@ class BootstrapEnhancedDropdowns {
       state.openTimeout = setTimeout(() => {
         state.openTimeout = null;
         dropdownInstance.show();
+        dropdownInstance._element.blur();
       }, 150);
     }
   }
