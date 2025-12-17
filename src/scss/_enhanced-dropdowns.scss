@@ -43,7 +43,6 @@
 .dropdown-menu .bs-dropdown-caret:hover {
     flex-shrink: 0;
     width: var(--bs-dropdown-caret-width);
-    min-height: var(--bs-dropdown-caret-width); /* 44px for WCAG AAA */
     padding-left: var(--bs-dropdown-caret-padding-x);
     padding-right: var(--bs-dropdown-caret-padding-x);
     border: none;
@@ -60,7 +59,6 @@
     line-height: inherit;
 }
 
-/* Caret icon - 15% larger than Bootstrap default for WCAG AAA visibility */
 .bs-dropdown-caret::after,
 .navbar-nav .dropdown-toggle::after {
     display: inline-block;
@@ -73,13 +71,11 @@
     transition: transform 0.2s ease-in-out;
 }
 
-/* Split caret: center with slight left offset to associate with parent label */
 .bs-dropdown-caret::after {
     margin-left: -0.1em;
     margin-right: 0.1em;
 }
 
-/* Non-split toggle: Bootstrap default spacing */
 .navbar-nav .dropdown-toggle::after {
     margin-left: .255em;
 }
