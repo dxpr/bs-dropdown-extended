@@ -25,6 +25,7 @@
 | Keyboard Navigation | Arrow keys, Enter, Space, Escape, Tab |
 | ARIA Accessibility | Full screen reader support |
 | Mobile-Friendly | Responsive for all viewports |
+| RTL Support | Full right-to-left language support |
 
 *If any dropdown in a navbar has nested submenus, all dropdowns in that navbar become click-only to avoid frustrating hover tunnel navigation.
 
