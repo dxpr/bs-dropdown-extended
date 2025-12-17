@@ -11,10 +11,6 @@ class BootstrapEnhancedDropdowns {
       caretSelector: '.bs-dropdown-caret',
       submenuSelector: '.bs-dropdown-submenu',
       fullToggleSelector: '.dropdown-toggle',
-      hoverEnabled: true,     // Set to false to disable hover behavior entirely
-      hoverOpenDelay: 150,    // ms before opening on hover
-      hoverCloseDelay: 300,   // ms grace period before closing (needs time to reach menu)
-      desktopBreakpoint: 992, // Minimum viewport width for desktop behavior
       debug: false,
       ...options
     };
@@ -362,9 +358,7 @@ class BootstrapEnhancedDropdowns {
   }
 
   _isDesktopWithHover() {
-    const meetsBreakpoint = window.innerWidth >= this.options.desktopBreakpoint;
-    const hasHoverCapability = window.matchMedia('(hover: hover)').matches;
-    return meetsBreakpoint && hasHoverCapability;
+    return window.innerWidth >= 992 && window.matchMedia('(hover: hover)').matches;
   }
 
   _getDropdownToggle(navItem) {
@@ -410,7 +404,7 @@ class BootstrapEnhancedDropdowns {
       state.openTimeout = setTimeout(() => {
         state.openTimeout = null;
         dropdownInstance.show();
-      }, this.options.hoverOpenDelay);
+      }, 150);
     }
   }
 
@@ -424,7 +418,7 @@ class BootstrapEnhancedDropdowns {
       state.closeTimeout = setTimeout(() => {
         state.closeTimeout = null;
         dropdownInstance.hide();
-      }, this.options.hoverCloseDelay);
+      }, 200);
     }
   }
 
@@ -476,7 +470,7 @@ class BootstrapEnhancedDropdowns {
   }
 
   _handleResize() {
-    const shouldHaveHover = this.options.hoverEnabled && this._isDesktopWithHover();
+    const shouldHaveHover = this._isDesktopWithHover();
 
     if (shouldHaveHover && !this._hoverInitialized) {
       this._initHoverListeners();
@@ -500,8 +494,6 @@ class BootstrapEnhancedDropdowns {
   }
 
   initHoverBehavior() {
-    if (!this.options.hoverEnabled) return;
-
     let resizeTimeout;
     this._boundResizeHandler = () => {
       clearTimeout(resizeTimeout);
