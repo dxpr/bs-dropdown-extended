@@ -16,9 +16,6 @@ class BootstrapEnhancedDropdowns {
     };
 
     this._hoverState = new WeakMap();
-    this._hoverElements = new Set();
-    this._boundResizeHandler = null;
-    this._hoverInitialized = false;
     this.init();
   }
     
@@ -353,45 +350,11 @@ class BootstrapEnhancedDropdowns {
     });
   }
 
-  _menuHasNestedSubmenus(navbarNav) {
-    return navbarNav.querySelectorAll(this.options.submenuSelector).length > 0;
-  }
-
-  _isDesktopWithHover() {
-    return window.innerWidth >= 992 && window.matchMedia('(hover: hover)').matches;
-  }
-
-  _getDropdownToggle(navItem) {
-    const splitWrapper = navItem.querySelector(this.options.splitButtonSelector);
-    if (splitWrapper) {
-      return splitWrapper.querySelector(this.options.caretSelector);
-    }
-    return navItem.querySelector(this.options.fullToggleSelector);
-  }
-
   _getHoverState(navItem) {
     if (!this._hoverState.has(navItem)) {
-      this._hoverState.set(navItem, {
-        openTimeout: null,
-        closeTimeout: null,
-        listeners: []
-      });
+      this._hoverState.set(navItem, { openTimeout: null, closeTimeout: null });
     }
     return this._hoverState.get(navItem);
-  }
-
-  _clearHoverTimeouts(navItem) {
-    const state = this._hoverState.get(navItem);
-    if (!state) return;
-
-    if (state.openTimeout) {
-      clearTimeout(state.openTimeout);
-      state.openTimeout = null;
-    }
-    if (state.closeTimeout) {
-      clearTimeout(state.closeTimeout);
-      state.closeTimeout = null;
-    }
   }
 
   _handleHoverEnter(navItem, dropdownInstance) {
@@ -422,97 +385,42 @@ class BootstrapEnhancedDropdowns {
     }
   }
 
-  _addHoverListener(element, event, handler) {
-    element.addEventListener(event, handler);
-    this._hoverElements.add({ element, event, handler });
-  }
-
-  _attachHoverListeners(navItem) {
-    const toggle = this._getDropdownToggle(navItem);
-    if (!toggle) return;
-
-    const dropdownInstance = bootstrap.Dropdown.getInstance(toggle);
-    if (!dropdownInstance) return;
-
-    const menu = navItem.querySelector('.dropdown-menu');
-    if (!menu) return;
-
-    const caretButton = navItem.querySelector(`${this.options.splitButtonSelector} ${this.options.caretSelector}`);
-    const isSplitButton = !!caretButton;
-    const enterHandler = () => this._handleHoverEnter(navItem, dropdownInstance);
-    const leaveHandler = () => this._handleHoverLeave(navItem, dropdownInstance);
-
-    if (isSplitButton) {
-      // Split button: hover on caret and menu separately
-      this._addHoverListener(caretButton, 'mouseenter', enterHandler);
-      this._addHoverListener(caretButton, 'mouseleave', leaveHandler);
-      this._addHoverListener(menu, 'mouseenter', enterHandler);
-      this._addHoverListener(menu, 'mouseleave', leaveHandler);
-    } else {
-      // Full toggle: nav-item encompasses toggle + menu
-      this._addHoverListener(navItem, 'mouseenter', enterHandler);
-      this._addHoverListener(navItem, 'mouseleave', leaveHandler);
-    }
-
-    navItem.dataset.hoverEnabled = 'true';
-  }
-
-  _removeHoverListeners() {
-    this._hoverElements.forEach(({ element, event, handler }) => {
-      element.removeEventListener(event, handler);
-    });
-    this._hoverElements.clear();
-
-    document.querySelectorAll('[data-hover-enabled="true"]').forEach(navItem => {
-      this._clearHoverTimeouts(navItem);
-      delete navItem.dataset.hoverEnabled;
-    });
-  }
-
-  _handleResize() {
-    const shouldHaveHover = this._isDesktopWithHover();
-
-    if (shouldHaveHover && !this._hoverInitialized) {
-      this._initHoverListeners();
-      this._hoverInitialized = true;
-    } else if (!shouldHaveHover && this._hoverInitialized) {
-      this._removeHoverListeners();
-      this._hoverInitialized = false;
-    }
-  }
-
-  _initHoverListeners() {
-    const navbarNavs = document.querySelectorAll('.navbar-nav');
-    navbarNavs.forEach(navbarNav => {
-      if (this._menuHasNestedSubmenus(navbarNav)) return;
-
-      const dropdowns = Array.from(navbarNav.children).filter(
-        child => child.matches('.nav-item.dropdown')
-      );
-      dropdowns.forEach(navItem => this._attachHoverListeners(navItem));
-    });
-  }
-
   initHoverBehavior() {
-    let resizeTimeout;
-    this._boundResizeHandler = () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => this._handleResize(), 100);
-    };
-    window.addEventListener('resize', this._boundResizeHandler);
+    if (window.innerWidth < 992 || !window.matchMedia('(hover: hover)').matches) return;
 
-    this._handleResize();
-  }
+    document.querySelectorAll('.navbar-nav').forEach(navbarNav => {
+      if (navbarNav.querySelectorAll(this.options.submenuSelector).length > 0) return;
 
-  destroy() {
-    this._removeHoverListeners();
+      Array.from(navbarNav.children)
+        .filter(child => child.matches('.nav-item.dropdown'))
+        .forEach(navItem => {
+          const splitWrapper = navItem.querySelector(this.options.splitButtonSelector);
+          const toggle = splitWrapper
+            ? splitWrapper.querySelector(this.options.caretSelector)
+            : navItem.querySelector(this.options.fullToggleSelector);
+          if (!toggle) return;
 
-    if (this._boundResizeHandler) {
-      window.removeEventListener('resize', this._boundResizeHandler);
-      this._boundResizeHandler = null;
-    }
+          const dropdownInstance = bootstrap.Dropdown.getInstance(toggle);
+          if (!dropdownInstance) return;
 
-    this._hoverInitialized = false;
+          const menu = navItem.querySelector('.dropdown-menu');
+          if (!menu) return;
+
+          const caretButton = navItem.querySelector(`${this.options.splitButtonSelector} ${this.options.caretSelector}`);
+          const enterHandler = () => this._handleHoverEnter(navItem, dropdownInstance);
+          const leaveHandler = () => this._handleHoverLeave(navItem, dropdownInstance);
+
+          if (caretButton) {
+            caretButton.addEventListener('mouseenter', enterHandler);
+            caretButton.addEventListener('mouseleave', leaveHandler);
+            menu.addEventListener('mouseenter', enterHandler);
+            menu.addEventListener('mouseleave', leaveHandler);
+          } else {
+            navItem.addEventListener('mouseenter', enterHandler);
+            navItem.addEventListener('mouseleave', leaveHandler);
+          }
+        });
+    });
   }
 }
 
