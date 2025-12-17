@@ -76,10 +76,13 @@
 .bs-dropdown-wrapper > .nav-link:focus-visible,
 .bs-dropdown-item-wrapper > .dropdown-item:focus-visible,
 .bs-dropdown-wrapper > .bs-dropdown-caret:focus-visible,
-.bs-dropdown-item-wrapper > .bs-dropdown-caret:focus-visible {
+.bs-dropdown-item-wrapper > .bs-dropdown-caret:focus-visible,
+.navbar-nav .nav-link.dropdown-toggle:focus-visible,
+.dropdown-menu .dropdown-item.dropdown-toggle:focus-visible {
     color: var(--bs-primary-text-emphasis);
     background-color: var(--bs-primary-bg-subtle);
     outline: none;
+    box-shadow: none;
 }
 
 .bs-dropdown-caret[aria-expanded="true"]::after {
