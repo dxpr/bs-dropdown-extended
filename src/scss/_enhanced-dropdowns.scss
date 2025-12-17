@@ -5,8 +5,8 @@
  */
 
 :root {
-    --bs-dropdown-caret-width: 2.5rem; /* Width for caret togglers (~40px) */
-    --bs-dropdown-caret-padding-x: 0.625rem; /* 10px horizontal padding inside caret */
+    --bs-dropdown-caret-width: 2.75rem; /* Width for caret togglers (44px for WCAG AAA) */
+    --bs-dropdown-caret-padding-x: 0.75rem; /* 12px horizontal padding inside caret */
     --bs-dropdown-indent-step: 1.25rem; /* Standard indentation step between menu levels */
 }
 
@@ -60,13 +60,14 @@
 
 .bs-dropdown-caret::after {
     display: inline-block;
-    margin-left: .255em;
+    margin-left: -0.1em;
+    margin-right: 0.1em;
     vertical-align: .255em;
     content: "";
-    border-top: .3em solid;
-    border-right: .3em solid transparent;
+    border-top: .345em solid;
+    border-right: .345em solid transparent;
     border-bottom: 0;
-    border-left: .3em solid transparent;
+    border-left: .345em solid transparent;
     transition: transform 0.2s ease-in-out;
 }
 
