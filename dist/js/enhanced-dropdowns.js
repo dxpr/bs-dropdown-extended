@@ -11,13 +11,19 @@ class BootstrapEnhancedDropdowns {
       caretSelector: '.bs-dropdown-caret',
       submenuSelector: '.bs-dropdown-submenu',
       fullToggleSelector: '.dropdown-toggle',
+      hoverEnabled: true,     // Set to false to disable hover behavior entirely
       hoverOpenDelay: 150,    // ms before opening on hover
-      hoverCloseDelay: 200,   // ms grace period before closing
+      hoverCloseDelay: 300,   // ms grace period before closing (needs time to reach menu)
+      desktopBreakpoint: 992, // Minimum viewport width for desktop behavior
       debug: false,
       ...options
     };
 
-    this._hoverTimeouts = new Map();
+    // Hover state management using WeakMap for stable element-based tracking
+    this._hoverState = new WeakMap();
+    this._hoverElements = new Set(); // Track elements for cleanup
+    this._boundResizeHandler = null;
+    this._hoverInitialized = false;
     this.init();
   }
     
@@ -352,16 +358,18 @@ class BootstrapEnhancedDropdowns {
     });
   }
 
+  // ==================== Hover Behavior ====================
+
   _menuHasNestedSubmenus(navbarNav) {
     // Check if this menu (navbar-nav) contains any nested submenus
     return navbarNav.querySelectorAll(this.options.submenuSelector).length > 0;
   }
 
-  _clearHoverTimeout(key) {
-    if (this._hoverTimeouts.has(key)) {
-      clearTimeout(this._hoverTimeouts.get(key));
-      this._hoverTimeouts.delete(key);
-    }
+  _isDesktopWithHover() {
+    // Check both viewport width AND device hover capability
+    const meetsBreakpoint = window.innerWidth >= this.options.desktopBreakpoint;
+    const hasHoverCapability = window.matchMedia('(hover: hover)').matches;
+    return meetsBreakpoint && hasHoverCapability;
   }
 
   _getDropdownToggle(navItem) {
@@ -373,6 +381,74 @@ class BootstrapEnhancedDropdowns {
     return navItem.querySelector(this.options.fullToggleSelector);
   }
 
+  _getHoverState(navItem) {
+    // Get or create hover state for a nav item
+    if (!this._hoverState.has(navItem)) {
+      this._hoverState.set(navItem, {
+        openTimeout: null,
+        closeTimeout: null,
+        listeners: []
+      });
+    }
+    return this._hoverState.get(navItem);
+  }
+
+  _clearHoverTimeouts(navItem) {
+    const state = this._hoverState.get(navItem);
+    if (!state) return;
+
+    if (state.openTimeout) {
+      clearTimeout(state.openTimeout);
+      state.openTimeout = null;
+    }
+    if (state.closeTimeout) {
+      clearTimeout(state.closeTimeout);
+      state.closeTimeout = null;
+    }
+  }
+
+  _handleHoverEnter(navItem, dropdownInstance) {
+    const state = this._getHoverState(navItem);
+
+    // Clear any pending close timeout
+    if (state.closeTimeout) {
+      clearTimeout(state.closeTimeout);
+      state.closeTimeout = null;
+    }
+
+    // Set open timeout (if not already open)
+    if (!state.openTimeout) {
+      state.openTimeout = setTimeout(() => {
+        state.openTimeout = null;
+        dropdownInstance.show();
+      }, this.options.hoverOpenDelay);
+    }
+  }
+
+  _handleHoverLeave(navItem, dropdownInstance) {
+    const state = this._getHoverState(navItem);
+
+    // Clear any pending open timeout
+    if (state.openTimeout) {
+      clearTimeout(state.openTimeout);
+      state.openTimeout = null;
+    }
+
+    // Set close timeout (grace period to reach menu or return)
+    if (!state.closeTimeout) {
+      state.closeTimeout = setTimeout(() => {
+        state.closeTimeout = null;
+        dropdownInstance.hide();
+      }, this.options.hoverCloseDelay);
+    }
+  }
+
+  _addHoverListener(element, event, handler) {
+    element.addEventListener(event, handler);
+    // Track for cleanup
+    this._hoverElements.add({ element, event, handler });
+  }
+
   _attachHoverListeners(navItem) {
     const toggle = this._getDropdownToggle(navItem);
     if (!toggle) return;
@@ -380,47 +456,111 @@ class BootstrapEnhancedDropdowns {
     const dropdownInstance = bootstrap.Dropdown.getInstance(toggle);
     if (!dropdownInstance) return;
 
-    const itemId = navItem.id || Math.random().toString(36).substring(2);
+    // Find the dropdown menu
+    const menu = navItem.querySelector('.dropdown-menu');
+    if (!menu) return;
 
-    // For split buttons, only attach hover to caret button; for full toggles, use entire nav-item
+    // Determine hover targets:
+    // - For split buttons: caret button + dropdown menu
+    // - For full toggles: entire nav-item (includes toggle + menu naturally)
     const caretButton = navItem.querySelector(`${this.options.splitButtonSelector} ${this.options.caretSelector}`);
-    const hoverTarget = caretButton || navItem;
+    const isSplitButton = !!caretButton;
 
-    hoverTarget.addEventListener('mouseenter', () => {
-      // Clear any pending close timeout
-      this._clearHoverTimeout(`close-${itemId}`);
+    // Create bound handlers for this nav item
+    const enterHandler = () => this._handleHoverEnter(navItem, dropdownInstance);
+    const leaveHandler = () => this._handleHoverLeave(navItem, dropdownInstance);
 
-      // Set open timeout
-      this._hoverTimeouts.set(`open-${itemId}`, setTimeout(() => {
-        dropdownInstance.show();
-      }, this.options.hoverOpenDelay));
+    if (isSplitButton) {
+      // Split button: hover on caret and menu separately
+      this._addHoverListener(caretButton, 'mouseenter', enterHandler);
+      this._addHoverListener(caretButton, 'mouseleave', leaveHandler);
+      this._addHoverListener(menu, 'mouseenter', enterHandler);
+      this._addHoverListener(menu, 'mouseleave', leaveHandler);
+    } else {
+      // Full toggle: hover on entire nav-item (encompasses toggle + menu)
+      this._addHoverListener(navItem, 'mouseenter', enterHandler);
+      this._addHoverListener(navItem, 'mouseleave', leaveHandler);
+    }
+
+    // Mark as having hover listeners
+    navItem.dataset.hoverEnabled = 'true';
+  }
+
+  _removeHoverListeners() {
+    // Remove all hover event listeners
+    this._hoverElements.forEach(({ element, event, handler }) => {
+      element.removeEventListener(event, handler);
     });
+    this._hoverElements.clear();
 
-    hoverTarget.addEventListener('mouseleave', () => {
-      // Clear any pending open timeout
-      this._clearHoverTimeout(`open-${itemId}`);
-
-      // Set close timeout (grace period)
-      this._hoverTimeouts.set(`close-${itemId}`, setTimeout(() => {
-        dropdownInstance.hide();
-      }, this.options.hoverCloseDelay));
+    // Clear all timeouts and remove data attributes
+    document.querySelectorAll('[data-hover-enabled="true"]').forEach(navItem => {
+      this._clearHoverTimeouts(navItem);
+      delete navItem.dataset.hoverEnabled;
     });
   }
 
-  initHoverBehavior() {
-    // Only enable hover on desktop
-    if (window.innerWidth <= 991.98) return;
+  _handleResize() {
+    const shouldHaveHover = this.options.hoverEnabled && this._isDesktopWithHover();
 
+    if (shouldHaveHover && !this._hoverInitialized) {
+      // Enable hover
+      this._initHoverListeners();
+      this._hoverInitialized = true;
+    } else if (!shouldHaveHover && this._hoverInitialized) {
+      // Disable hover
+      this._removeHoverListeners();
+      this._hoverInitialized = false;
+    }
+  }
+
+  _initHoverListeners() {
     // Process each navbar-nav separately - hover is all-or-nothing per menu
     const navbarNavs = document.querySelectorAll('.navbar-nav');
     navbarNavs.forEach(navbarNav => {
       // Skip this entire menu if it has any nested submenus
       if (this._menuHasNestedSubmenus(navbarNav)) return;
 
-      // Enable hover for all dropdowns in this menu
-      const dropdowns = navbarNav.querySelectorAll(':scope > .nav-item.dropdown');
+      // Enable hover for all top-level dropdowns in this menu
+      // Using child combinator without :scope for broader compatibility
+      const dropdowns = Array.from(navbarNav.children).filter(
+        child => child.matches('.nav-item.dropdown')
+      );
       dropdowns.forEach(navItem => this._attachHoverListeners(navItem));
     });
+  }
+
+  initHoverBehavior() {
+    // Skip if hover is disabled via options
+    if (!this.options.hoverEnabled) return;
+
+    // Set up resize handler with debounce
+    let resizeTimeout;
+    this._boundResizeHandler = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => this._handleResize(), 100);
+    };
+    window.addEventListener('resize', this._boundResizeHandler);
+
+    // Initial check
+    this._handleResize();
+  }
+
+  // ==================== Cleanup ====================
+
+  destroy() {
+    // Remove hover listeners and resize handler
+    this._removeHoverListeners();
+
+    if (this._boundResizeHandler) {
+      window.removeEventListener('resize', this._boundResizeHandler);
+      this._boundResizeHandler = null;
+    }
+
+    this._hoverInitialized = false;
+
+    // Note: Bootstrap dropdown instances are not destroyed here
+    // as they may be managed elsewhere or needed for click functionality
   }
 }
 

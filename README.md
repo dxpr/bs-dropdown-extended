@@ -161,14 +161,21 @@ Wrap your navigation in a `<ul class="navbar-nav" role="menubar">`.
     -   21-27 items: 4 columns (`.dropdown-menu-columns-4`, becomes full-width)
     -   28+ items: 5 columns (`.dropdown-menu-columns-5`, becomes full-width)
     This behavior is active on viewports 992px and wider. The full-width effect relies on the parent `li.nav-item.dropdown` getting the `.dropdown-full-width` class, which sets its position to static.
--   **Hover Timing**: The hover behavior can be fine-tuned via JavaScript options:
+-   **Hover Behavior Options**: The hover behavior can be configured via JavaScript options:
     ```js
     new BootstrapEnhancedDropdowns({
-      hoverOpenDelay: 150,   // ms before opening on hover (default: 150)
-      hoverCloseDelay: 200   // ms grace period before closing (default: 200)
+      hoverEnabled: true,      // Set to false to disable hover entirely (default: true)
+      hoverOpenDelay: 150,     // ms before opening on hover (default: 150)
+      hoverCloseDelay: 300,    // ms grace period before closing (default: 300)
+      desktopBreakpoint: 992   // Minimum viewport width for hover behavior (default: 992)
     });
     ```
-    Note: Hover is automatically disabled when nested submenus (`.bs-dropdown-submenu`) are present.
+    **Notes:**
+    - Hover is automatically disabled when nested submenus (`.bs-dropdown-submenu`) are present in a menu.
+    - Hover only activates on devices that support hover (checked via `matchMedia('(hover: hover)')`).
+    - Hover behavior adapts dynamically when the viewport is resized across the breakpoint.
+    - For split buttons, only hovering the caret (and menu) triggers the dropdown; the text link remains click-only.
+    - Call `instance.destroy()` to remove all hover listeners and clean up resources.
 -   **Border Radius**: As an example of Bootstrap customization, you can set global border-radius to 0 in your page-specific CSS if desired:
     ```css
     /* In your page-specific <style> tag or CSS file */
