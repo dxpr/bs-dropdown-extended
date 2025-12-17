@@ -42,6 +42,7 @@
 .dropdown-menu .bs-dropdown-caret:hover {
   flex-shrink: 0;
   width: var(--bs-dropdown-caret-width);
+  min-height: var(--bs-dropdown-caret-width);
   padding-inline: var(--bs-dropdown-caret-padding-x);
   border: none;
   background-color: transparent;
