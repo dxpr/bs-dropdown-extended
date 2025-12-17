@@ -145,6 +145,7 @@ Wrap your navigation in a `<ul class="navbar-nav" role="menubar">`.
 -   **Focus Management**: When a dropdown is opened, focus is moved to the first interactive item. When closed, focus returns to the toggle button.
 -   **Clear Visual Cues**: Caret icons indicate dropdown functionality. Hover and focus states are distinct.
 -   **Separation of Concerns (Split Buttons)**: Users can click the text part to navigate directly or the caret to explore submenu options, providing a clear and predictable UX.
+-   **WCAG AAA Target Size**: Split button caret toggles meet the WCAG 2.2 Success Criterion 2.5.5 minimum target size of 44×44 CSS pixels for enhanced accessibility.
 
 ## Customization
 
