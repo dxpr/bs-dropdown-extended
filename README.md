@@ -17,6 +17,7 @@ A powerful enhancement for Bootstrap 5 navigation menus, featuring split dropdow
 -   **Multi-level Submenus**: Supports nested dropdowns (currently styled for up to 3 levels effectively).
 -   **Automatic Multi-Column Layout (Desktop)**: Top-level dropdowns automatically arrange items into 1 to 5 columns on larger screens (>=992px) based on item count. Dropdowns with 3 or more columns expand to the full width of the navbar.
 -   **Viewport Edge Detection**: Dropdowns automatically reposition when they would overflow the viewport edge, ensuring content remains visible and accessible.
+-   **Smart Hover Behavior (Desktop)**: For menus without nested submenus, dropdowns open on hover with a configurable delay. For split buttons, only hovering the caret triggers the dropdown (the text remains click-to-navigate). Menus with nested submenus remain click-only for better UX. Click always works as a fallback.
 -   **Enhanced Keyboard Navigation**: Intuitive navigation using Arrow keys, Enter, Space, Escape, and Tab.
 -   **ARIA Accessibility**: Implements ARIA roles and attributes for screen readers and assistive technologies.
 -   **Focus Management**: Ensures logical focus flow when opening, closing, and navigating menus.
