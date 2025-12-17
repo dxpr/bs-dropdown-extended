@@ -188,12 +188,16 @@ class BootstrapEnhancedDropdowns {
     const existingToggles = document.querySelectorAll('[data-bs-toggle="dropdown"]');
 
     existingToggles.forEach(toggle => {
-      // Skip if already initialized or if it's inside our custom structures
-      if (bootstrap.Dropdown.getInstance(toggle)) return;
+      // Skip if it's inside our custom structures (handled separately)
       if (toggle.closest('.bs-dropdown-wrapper, .bs-dropdown-item-wrapper')) return;
 
-      const config = this._getPopperConfig(toggle);
-      new bootstrap.Dropdown(toggle, config);
+      let dropdownInstance = bootstrap.Dropdown.getInstance(toggle);
+      if (!dropdownInstance) {
+        const config = this._getPopperConfig(toggle);
+        dropdownInstance = new bootstrap.Dropdown(toggle, config);
+      }
+
+      this._attachKeyboardHandler(toggle, dropdownInstance);
     });
   }
 
