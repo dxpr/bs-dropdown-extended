@@ -11,10 +11,13 @@ class BootstrapEnhancedDropdowns {
       caretSelector: '.bs-dropdown-caret',
       submenuSelector: '.bs-dropdown-submenu',
       fullToggleSelector: '.dropdown-toggle',
+      hoverOpenDelay: 150,    // ms before opening on hover
+      hoverCloseDelay: 200,   // ms grace period before closing
       debug: false,
       ...options
     };
-        
+
+    this._hoverTimeouts = new Map();
     this.init();
   }
     
@@ -32,6 +35,7 @@ class BootstrapEnhancedDropdowns {
     this.initPopperConfig();
     this.initSplitButtonDropdowns();
     this.initSubmenuDropdowns();
+    this.initHoverBehavior();
   }
 
   _isFullWidthDropdown(toggleElement) {
@@ -345,6 +349,77 @@ class BootstrapEnhancedDropdowns {
       if (itemCount > 0) {
         this._applyColumnClasses(menu, parentLi, numColumns);
       }
+    });
+  }
+
+  _menuHasNestedSubmenus(navbarNav) {
+    // Check if this menu (navbar-nav) contains any nested submenus
+    return navbarNav.querySelectorAll(this.options.submenuSelector).length > 0;
+  }
+
+  _clearHoverTimeout(key) {
+    if (this._hoverTimeouts.has(key)) {
+      clearTimeout(this._hoverTimeouts.get(key));
+      this._hoverTimeouts.delete(key);
+    }
+  }
+
+  _getDropdownToggle(navItem) {
+    // Find the toggle element for a nav item (either caret button or dropdown-toggle link)
+    const splitWrapper = navItem.querySelector(this.options.splitButtonSelector);
+    if (splitWrapper) {
+      return splitWrapper.querySelector(this.options.caretSelector);
+    }
+    return navItem.querySelector(this.options.fullToggleSelector);
+  }
+
+  _attachHoverListeners(navItem) {
+    const toggle = this._getDropdownToggle(navItem);
+    if (!toggle) return;
+
+    const dropdownInstance = bootstrap.Dropdown.getInstance(toggle);
+    if (!dropdownInstance) return;
+
+    const itemId = navItem.id || Math.random().toString(36).substring(2);
+
+    // For split buttons, only attach hover to caret button; for full toggles, use entire nav-item
+    const caretButton = navItem.querySelector(`${this.options.splitButtonSelector} ${this.options.caretSelector}`);
+    const hoverTarget = caretButton || navItem;
+
+    hoverTarget.addEventListener('mouseenter', () => {
+      // Clear any pending close timeout
+      this._clearHoverTimeout(`close-${itemId}`);
+
+      // Set open timeout
+      this._hoverTimeouts.set(`open-${itemId}`, setTimeout(() => {
+        dropdownInstance.show();
+      }, this.options.hoverOpenDelay));
+    });
+
+    hoverTarget.addEventListener('mouseleave', () => {
+      // Clear any pending open timeout
+      this._clearHoverTimeout(`open-${itemId}`);
+
+      // Set close timeout (grace period)
+      this._hoverTimeouts.set(`close-${itemId}`, setTimeout(() => {
+        dropdownInstance.hide();
+      }, this.options.hoverCloseDelay));
+    });
+  }
+
+  initHoverBehavior() {
+    // Only enable hover on desktop
+    if (window.innerWidth <= 991.98) return;
+
+    // Process each navbar-nav separately - hover is all-or-nothing per menu
+    const navbarNavs = document.querySelectorAll('.navbar-nav');
+    navbarNavs.forEach(navbarNav => {
+      // Skip this entire menu if it has any nested submenus
+      if (this._menuHasNestedSubmenus(navbarNav)) return;
+
+      // Enable hover for all dropdowns in this menu
+      const dropdowns = navbarNav.querySelectorAll(':scope > .nav-item.dropdown');
+      dropdowns.forEach(navItem => this._attachHoverListeners(navItem));
     });
   }
 }

@@ -17,6 +17,7 @@ A powerful enhancement for Bootstrap 5 navigation menus, featuring split dropdow
 -   **Multi-level Submenus**: Supports nested dropdowns (currently styled for up to 3 levels effectively).
 -   **Automatic Multi-Column Layout (Desktop)**: Top-level dropdowns automatically arrange items into 1 to 5 columns on larger screens (>=992px) based on item count. Dropdowns with 3 or more columns expand to the full width of the navbar.
 -   **Viewport Edge Detection**: Dropdowns automatically reposition when they would overflow the viewport edge, ensuring content remains visible and accessible.
+-   **Smart Hover Behavior (Desktop)**: For menus without nested submenus, dropdowns open on hover with a configurable delay. For split buttons, only hovering the caret triggers the dropdown (the text remains click-to-navigate). Menus with nested submenus remain click-only for better UX. Click always works as a fallback.
 -   **Enhanced Keyboard Navigation**: Intuitive navigation using Arrow keys, Enter, Space, Escape, and Tab.
 -   **ARIA Accessibility**: Implements ARIA roles and attributes for screen readers and assistive technologies.
 -   **Focus Management**: Ensures logical focus flow when opening, closing, and navigating menus.
@@ -160,6 +161,14 @@ Wrap your navigation in a `<ul class="navbar-nav" role="menubar">`.
     -   21-27 items: 4 columns (`.dropdown-menu-columns-4`, becomes full-width)
     -   28+ items: 5 columns (`.dropdown-menu-columns-5`, becomes full-width)
     This behavior is active on viewports 992px and wider. The full-width effect relies on the parent `li.nav-item.dropdown` getting the `.dropdown-full-width` class, which sets its position to static.
+-   **Hover Timing**: The hover behavior can be fine-tuned via JavaScript options:
+    ```js
+    new BootstrapEnhancedDropdowns({
+      hoverOpenDelay: 150,   // ms before opening on hover (default: 150)
+      hoverCloseDelay: 200   // ms grace period before closing (default: 200)
+    });
+    ```
+    Note: Hover is automatically disabled when nested submenus (`.bs-dropdown-submenu`) are present.
 -   **Border Radius**: As an example of Bootstrap customization, you can set global border-radius to 0 in your page-specific CSS if desired:
     ```css
     /* In your page-specific <style> tag or CSS file */

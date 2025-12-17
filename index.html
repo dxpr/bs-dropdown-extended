@@ -382,16 +382,72 @@
         </div>
     </nav>
 
+    <!-- Demo Section: Single-Level Menu with Hover -->
+    <div class="container mt-5">
+        <nav class="navbar navbar-expand-lg bg-light border rounded" id="simpleMenuDemo">
+            <div class="container-fluid">
+                <span class="navbar-brand">Simple</span>
+                <div class="collapse navbar-collapse show">
+                    <ul class="navbar-nav" role="menubar">
+                        <li class="nav-item" role="none">
+                            <a class="nav-link" href="#simple-home" role="menuitem">Home</a>
+                        </li>
+                        <li class="nav-item dropdown" role="none">
+                            <a class="nav-link dropdown-toggle" href="#" id="simpleProducts" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Products
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="simpleProducts">
+                                <li><a class="dropdown-item" href="#product-1" role="menuitem">Product One</a></li>
+                                <li><a class="dropdown-item" href="#product-2" role="menuitem">Product Two</a></li>
+                                <li><a class="dropdown-item" href="#product-3" role="menuitem">Product Three</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown" role="none">
+                            <a class="nav-link dropdown-toggle" href="#" id="simpleServices" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Services
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="simpleServices">
+                                <li><a class="dropdown-item" href="#service-1" role="menuitem">Consulting</a></li>
+                                <li><a class="dropdown-item" href="#service-2" role="menuitem">Development</a></li>
+                                <li><a class="dropdown-item" href="#service-3" role="menuitem">Support</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown" role="none">
+                            <div class="bs-dropdown-wrapper">
+                                <a class="nav-link" href="#simple-about" id="simpleAbout" role="menuitem">About</a>
+                                <button class="bs-dropdown-caret" type="button" aria-expanded="false" aria-controls="simpleAboutMenu" aria-labelledby="simpleAbout">
+                                    <span class="visually-hidden">Toggle About submenu</span>
+                                </button>
+                            </div>
+                            <ul class="dropdown-menu" id="simpleAboutMenu" aria-labelledby="simpleAbout">
+                                <li><a class="dropdown-item" href="#about-team" role="menuitem">Our Team</a></li>
+                                <li><a class="dropdown-item" href="#about-history" role="menuitem">History</a></li>
+                                <li><a class="dropdown-item" href="#about-careers" role="menuitem">Careers</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item" role="none">
+                            <a class="nav-link" href="#simple-contact" role="menuitem">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Enhanced Dropdowns JS -->
     <script src="./dist/js/enhanced-dropdowns.min.js"></script>
     <script>
        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Enhanced Dropdowns
+            // Initialize Enhanced Dropdowns for main nav (has submenus - hover disabled)
             new BootstrapEnhancedDropdowns({
                 debug: true // Enable for development if needed
             });
-        }); 
+
+            // Initialize separate instance for simple menu demo (no submenus - hover enabled)
+            // Note: In practice, you'd typically have one instance per page
+            // This is just for demonstration purposes
+        });
     </script>
 </body>
 </html> 
